@@ -19,7 +19,7 @@ int main() {
 	Button::Init();
 	__SEI
 	
-	
+	EAClock::UI::UIManager::Init();
 	
 	while(1){
 		Button::CallSubroutines();

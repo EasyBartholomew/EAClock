@@ -27,6 +27,7 @@ namespace BaseAVR {
 			_vLine = VLine();
 			_click = nullptr;
 			_longClick = nullptr;
+			_priority = CallPriority::Normal;
 		}
 		
 		void Button::Refresh() {
@@ -82,6 +83,10 @@ namespace BaseAVR {
 				}
 				
 				currentInst->_currentState = currentState;
+				
+				if(currentInst->GetHandlerPriority() == Button::CallPriority::High) {
+					RaiseEvent(*currentInst);
+				}
 			}
 		}
 		
@@ -109,10 +114,23 @@ namespace BaseAVR {
 			}
 		}
 		
+		Button::CallPriority Button::GetHandlerPriority() {
+			return _priority;
+		}
+		
+		void Button::SetHandlerPriority(const Button::CallPriority& priority) {
+			_priority = priority;
+		}
+		
 		void Button::CallSubroutines() {
 			
 			for (register fsize_t i = 0; i < Button::InstancesMax; i++)	{
-				Button::RaiseEvent(*Button::GetInstance(i));
+				
+				auto current = Button::GetInstance(i);
+				
+				if(current->GetHandlerPriority() == Button::CallPriority::Normal) {
+					Button::RaiseEvent(*current);
+				}
 			}
 		}
 		

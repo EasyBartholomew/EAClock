@@ -14,12 +14,20 @@ namespace BaseAVR {
 			Clicked,
 			LongClicked
 		};
+
 		
 		class Button;
 		
 		typedef void (*_ButtonEventCallBack)(const Button& sender);
 		
 		class Button {
+			
+			public:
+			
+			enum class CallPriority : u8_t {
+				Normal,
+				High
+			};
 			
 			private:
 			
@@ -29,6 +37,8 @@ namespace BaseAVR {
 			tu_t _status;
 			u8_t _currentState;
 			l_t _eventActed;
+			
+			CallPriority _priority;
 			
 			l_t IsPushed();
 			
@@ -54,6 +64,8 @@ namespace BaseAVR {
 			BaseAVR::HAL::VLine GetRef() const;
 			l_t IsRefered() const;
 			
+			CallPriority GetHandlerPriority();
+			void SetHandlerPriority(const CallPriority&);
 			
 			//Static
 			public:

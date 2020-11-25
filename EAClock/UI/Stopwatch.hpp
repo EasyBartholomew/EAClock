@@ -10,41 +10,60 @@ namespace EAClock {
 			
 			private:
 			
+			static Stopwatch instance;
+			
+			l_t firstStart;
+			
 			void Reset() {
 				UIEntityTime::SetTimeValue(TimeSpan(0));
+				UIEntityTime::SetShowMode(ShowMode::ss_th);
 			}
 			
-			void OnUpLongClick(const Button& sender) {
-				Reset();
+			static void OnUpLongClick(const Button& sender) {
+				instance.Reset();
 			}
 			
-			void OnUpClick(const Button& sender) {
+			static void OnUpClick(const Button& sender) {
 				
-				if(this->IsStarted()) {
-					this->Stop();
+				if(instance.IsStarted()) {
+					instance.Stop();
 				}
 				else {
-					this->Start();
+					instance.Start();
 				}
+			}
+			
+			Stopwatch(const TimeSpan& startVal, pbutton_t up) : UIEntityTime(FALSE, up, nullptr) {
+				UIEntityTime::SetTimeValue(startVal);
+				firstStart = TRUE;
 			}
 			
 			public:
 			
-			Stopwatch(const TimeSpan& startVal, pbutton_t up) : UIEntityTime(FALSE, up, nullptr) {
-				UIEntityTime::SetTimeValue(startVal);
-				
-				_up->SetClickHandler(OnUpClick);
-				_up->SetLongClickHandler(OnUpLongClick);
-				
+			void OnFirstStart() {
+				this->Reset();
 			}
 			
-			void OnUpdate(const TimeSpan& delta) {
+			void OnFocus() {
+				_up->SetClickHandler((_ButtonEventCallBack)Stopwatch::OnUpClick);
+				_up->SetLongClickHandler((_ButtonEventCallBack)Stopwatch::OnUpLongClick);
 				
-				if(this->IsStarted()) {
-					_timeValue = _timeValue + delta;
+				if(firstStart) {
+					this->OnFirstStart();
+					firstStart = FALSE;
 				}
+				
+				UIEntityTime::OnFocus();
+			}
+			
+			static Stopwatch* GetInstance(const TimeSpan& startVal, pbutton_t up) {
+				instance = Stopwatch(startVal, up);
+				
+				return &instance;
 			}
 		};
+		
+		Stopwatch Stopwatch::instance(TimeSpan(0), nullptr);
 	}
 }
 

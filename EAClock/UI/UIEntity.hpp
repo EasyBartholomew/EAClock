@@ -12,10 +12,16 @@ namespace EAClock {
 		
 		class UIEntity	{
 			
+			public:
+			
+			static const fsize_t BufferMax = 0x4;
+			
 			protected:
 			
 			l_t _state;
-			u16_t _value;
+			l_t _focus;
+			
+			mutable u8_t _buffer[UIEntity::BufferMax];
 			
 			pbutton_t _up;
 			pbutton_t _down;
@@ -24,6 +30,8 @@ namespace EAClock {
 				_state = state;
 				_up = up;
 				_down = down;
+				
+				_focus = FALSE;
 			}
 			
 			UIEntity(const l_t& state) : UIEntity(state, nullptr, nullptr)
@@ -32,14 +40,26 @@ namespace EAClock {
 			UIEntity() : UIEntity(FALSE)
 			{ }
 			
-			void SetValue(const u16_t& value) {
-				_value = value;
-			}
-			
 			public:
 			
-			virtual u16_t GetValue() const {
-				return _value;
+			virtual l_t IsFocused() {
+				return _focus;
+			}
+			
+			virtual void OnFocus() {
+				_focus = TRUE;
+			}
+			
+			virtual void OnFocusLost() {
+				_focus = FALSE;
+			}
+			
+			virtual u8_t* GetBufferPtr() {
+				return _buffer;
+			}
+			
+			virtual u8_t const* GetConstBufferPtr() const {
+				return _buffer;
 			}
 			
 			virtual l_t IsStarted() const {

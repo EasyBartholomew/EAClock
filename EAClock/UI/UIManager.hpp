@@ -6,69 +6,38 @@
 #include "../BaseAVR/Time/Timer.h"
 #include "../BaseAVR/IO/lcd8.h"
 #include "../BaseAVR/IO/Button.h"
+#include "../BaseAVR/HAL/VLine.h"
+#include "../BaseAVR/HAL/HWBase.h"
+
 #include "UIEntity.hpp"
 #include "UIEntityTime.hpp"
+#include "Stopwatch.hpp"
 
 
 using namespace BaseAVR;
+using namespace BaseAVR::HAL;
 using namespace BaseAVR::IO;
 using namespace BaseAVR::Time;
 
+#define UI_STOPWATCH 0
 
 namespace EAClock {
 	namespace UI {
-		
-		enum class ShowMode : u8_t {
-			hh_mm,
-			mm_ss,
-			ss_th
-		};
-		
-		enum class SPosition : u8_t {
-			First,
-			Second
-		};
 		
 		class UIManager {
 			
 			private:
 			
-			static const fsize_t UIS_MAX = 4;
+			static const fsize_t UIS_MAX = 1;
 			
-			static Button* select;
-			static Button* up;
-			static Button* down;
+			static pbutton_t select;
+			static pbutton_t up;
+			static pbutton_t down;
 			static Timer* updater;
-			static ShowMode currentMode;
+			static Timer* uiUpdater;
 			
 			static pui_entity uis[UIManager::UIS_MAX];
 			static fsize_t current_ui;
-			
-			static void WriteFormatedSpan(const TimeSpan& span) {
-				switch(currentMode) {
-					case ShowMode::hh_mm: {
-						lcd8::Write(span.GetHours() / 10, lcd8position::First);
-						lcd8::Write(span.GetHours() % 10, lcd8position::Second);
-						lcd8::Write(span.GetMinutes() / 10, lcd8position::Third);
-						lcd8::Write(span.GetMinutes() % 10, lcd8position::Fourth);
-					}break;
-					
-					case ShowMode::mm_ss: {
-						lcd8::Write(span.GetMinutes() / 10, lcd8position::First);
-						lcd8::Write(span.GetMinutes() % 10, lcd8position::Second);
-						lcd8::Write(span.GetSeconds() / 10, lcd8position::Third);
-						lcd8::Write(span.GetSeconds() % 10, lcd8position::Fourth);
-						
-					}break;
-					
-					case ShowMode::ss_th: {
-						lcd8::Write(span.GetSeconds() / 10, lcd8position::First);
-						lcd8::Write(span.GetSeconds() % 10, lcd8position::Second);
-						lcd8::Write(span.GetMilliseconds() / 100, lcd8position::Third);
-						lcd8::Write(span.GetMilliseconds() / 10, lcd8position::Fourth);
-					}break;
-				}
-			}
 			
 			static void OnUpdate() {
 				for(register fsize_t i = 0; i < UIS_MAX; i++) {
@@ -83,40 +52,71 @@ namespace EAClock {
 			
 			static void OnUiUpdate() {
 				auto cui = uis[current_ui];
-				
-				if(cui->IsTimeEntity()) {
-					
-					auto tui = (pui_entitytime)cui;
-					
-					UIManager::WriteFormatedSpan(tui->GetTimeValue());
-				}
-				
+				lcd8::Write(cui->GetConstBufferPtr());
 			}
 			
-			static void GoNextUI() {
+			static void GoToUi(const fsize_t& idx) {
+				auto cui = uis[current_ui];
+				cui->OnFocusLost();
 				
-				if(current_ui == (UIManager::UIS_MAX - 1)) {
-					current_ui = 0;
-					return;
-				}
+				current_ui = idx;
 				
-				current_ui++;
+				cui = uis[current_ui];
+				cui->OnFocus();
 			}
 			
 			static void ChangeShowMode() {
 				
+				auto cui = uis[current_ui];
+				
+				if(!cui->IsTimeEntity())
+				{ return; }
+				
+				auto tui = (pui_entitytime)cui;
+				auto currentMode = tui->GetShowMode();
+				
 				if(currentMode == ShowMode::ss_th) {
 					currentMode = (ShowMode)0U;
-					return;
+				}
+				else {
+					currentMode = (ShowMode)(TOBYTE(currentMode) + 1);
 				}
 				
-				currentMode = (ShowMode)(TOBYTE(currentMode) + 1);
+				tui->OnShowModeChanged(currentMode);
+			}
+			
+			static void OnSelectClick(const Button& sender){
+				UIManager::ChangeShowMode();
+			}
+			
+			static void OnSelectLongClick(const Button& sender){
+				UIManager::GoToUi(0);
 			}
 			
 			public:
 			
 			static void Init() {
 				
+				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan(0), up);
+				
+				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
+				up = Button::GetNextInstance(VLine(hwio_base::D, D1, IOMode::Input));
+				down = Button::GetNextInstance(VLine(hwio_base::D, D2, IOMode::Input));
+				
+				select->SetHandlerPriority(Button::CallPriority::High);
+				select->SetClickHandler(OnSelectClick);
+				select->SetLongClickHandler(OnSelectLongClick);
+				
+				updater = Timer::GetNextInstance(10);
+				updater->SetAutoReset(TRUE);
+				updater->SubscribeHandler(OnUpdate);
+				
+				uiUpdater = Timer::GetNextInstance(20);
+				uiUpdater->SetAutoReset(TRUE);
+				uiUpdater->SubscribeHandler(OnUiUpdate);
+				
+				updater->Start();
+				uiUpdater->Start();
 			}
 			
 		};
@@ -124,9 +124,12 @@ namespace EAClock {
 		pui_entity UIManager::uis[UIManager::UIS_MAX];
 		fsize_t UIManager::current_ui = 0;
 		
-		Button* UIManager::select = nullptr;
-		Button* UIManager::up = nullptr;
-		Button* UIManager::down = nullptr;
+		pbutton_t UIManager::select = nullptr;
+		pbutton_t UIManager::up = nullptr;
+		pbutton_t UIManager::down = nullptr;
+		
+		Timer* UIManager::updater = nullptr;
+		Timer* UIManager::uiUpdater = nullptr;
 	}
 }
 

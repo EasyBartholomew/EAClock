@@ -16,8 +16,15 @@ namespace BaseAVR {
 			return;
 			
 			//Current position
-			_CL(LCD8POS);
-			_SETVAL(DDRLCD8POS, DDR_OUT);
+			_SETH(DDRLCD8POS, D0);
+			_SETH(DDRLCD8POS, D1);
+			_SETH(DDRLCD8POS, D2);
+			_SETH(DDRLCD8POS, D3);
+			
+			_SETL(LCD8POS, D0);
+			_SETL(LCD8POS, D1);
+			_SETL(LCD8POS, D2);
+			_SETL(LCD8POS, D3);
 			
 			//Current value
 			_CL(LCD8CUR);
@@ -59,8 +66,8 @@ namespace BaseAVR {
 		}
 		
 		void lcd8::Write(u8_t const*const digits, const lcd8position& pointPosition){
-			for(register u8_t i = 0; i < LCD8_MAXDIG; i++){
-				lcd8::Write(digits[0], (lcd8position)i, TOBYTE(pointPosition) == i);
+			for(register u8_t i = 0; i < LCD8_MAXDIG; i++) {
+				lcd8::Write(digits[i], (lcd8position)i, TOBYTE(pointPosition) == i);
 			}
 		}
 		
@@ -82,10 +89,22 @@ namespace BaseAVR {
 			}
 		}
 		
+		void lcd8::Clear() {
+			
+			for(register fsize_t i = 0; i < LCD8_MAXDIG; i++) {
+				current[i] = DefaultDigit();
+			}
+		}
+		
 		void lcd8::Flush() {
 			static u8_t current_position = 0;
 			
-			_CL(LCD8POS);
+			//This part is not optimized!
+			_SETL(LCD8POS, D0);
+			_SETL(LCD8POS, D1);
+			_SETL(LCD8POS, D2);
+			_SETL(LCD8POS, D3);
+			
 			_SETH(LCD8POS, current_position);
 			_SETVAL(LCD8CUR, lcd8::current[current_position]);
 			current_position++;

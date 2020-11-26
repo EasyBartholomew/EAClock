@@ -48,6 +48,7 @@ namespace BaseAVR {
 			static void Write(u8_t const*const digits, const lcd8position& pointPosition);
 			static void Write(u8_t const*const digits);
 			static void Write(u16_t number);
+			static void Clear();
 			
 			static u8_t ReadAt(const lcd8position& pos);
 			

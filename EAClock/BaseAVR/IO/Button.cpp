@@ -172,11 +172,15 @@ namespace BaseAVR {
 		}
 		
 		void Button::SetClickHandler(_ButtonEventCallBack callBack) {
+			initiator->Stop();
 			_click = callBack;
+			initiator->Start();
 		}
 		
 		void Button::SetLongClickHandler(_ButtonEventCallBack callBack) {
+			initiator->Stop();
 			_longClick = callBack;
+			initiator->Start();
 		}
 		
 		_ButtonEventCallBack Button::GetClickHandler() const {

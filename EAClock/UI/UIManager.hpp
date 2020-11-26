@@ -19,7 +19,8 @@ using namespace BaseAVR::HAL;
 using namespace BaseAVR::IO;
 using namespace BaseAVR::Time;
 
-#define UI_STOPWATCH 0
+#define UI_CLOCK 0
+#define UI_STOPWATCH 1
 
 namespace EAClock {
 	namespace UI {
@@ -28,7 +29,7 @@ namespace EAClock {
 			
 			private:
 			
-			static const fsize_t UIS_MAX = 1;
+			static const fsize_t UIS_MAX = 4;
 			
 			static pbutton_t select;
 			static pbutton_t up;
@@ -43,6 +44,9 @@ namespace EAClock {
 				for(register fsize_t i = 0; i < UIS_MAX; i++) {
 					pui_entity cui = uis[i];
 					
+					if(cui == nullptr)
+					continue;
+					
 					if(cui->IsTimeEntity()) {
 						auto tui = (pui_entitytime)cui;
 						tui->OnUpdate(updater->GetInterval());
@@ -52,6 +56,10 @@ namespace EAClock {
 			
 			static void OnUiUpdate() {
 				auto cui = uis[current_ui];
+				
+				if(cui == nullptr)
+				return;
+				
 				lcd8::Write(cui->GetConstBufferPtr());
 			}
 			
@@ -90,12 +98,21 @@ namespace EAClock {
 			}
 			
 			static void OnSelectLongClick(const Button& sender){
-				UIManager::GoToUi(0);
+				if(current_ui == UI_CLOCK) {
+					GoToUi(UI_STOPWATCH);
+				}
+				else if(current_ui == UI_STOPWATCH) {
+					GoToUi(UI_CLOCK);
+				}
 			}
 			
 			public:
 			
 			static void Init() {
+				
+				for(register fsize_t i = 0; i < UIS_MAX; i++) {
+					uis[i] = nullptr;
+				}
 				
 				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan(0), up);
 				
@@ -114,6 +131,8 @@ namespace EAClock {
 				uiUpdater = Timer::GetNextInstance(20);
 				uiUpdater->SetAutoReset(TRUE);
 				uiUpdater->SubscribeHandler(OnUiUpdate);
+				
+				GoToUi(UI_STOPWATCH);
 				
 				updater->Start();
 				uiUpdater->Start();

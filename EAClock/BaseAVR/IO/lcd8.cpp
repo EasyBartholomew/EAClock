@@ -134,6 +134,11 @@ namespace BaseAVR {
 			}
 			
 			_SETLVL(lcd8::pointFlags, TOBYTE(pos), status);
+			
+			if(status)
+			lcd8::current[TOBYTE(pos)] |= TOBYTE(lcd8symbol::Point);
+			else
+			lcd8::current[TOBYTE(pos)] &= ~TOBYTE(lcd8symbol::Point);
 		}
 		
 		u8_t lcd8::ReadAt(const lcd8position& pos) {

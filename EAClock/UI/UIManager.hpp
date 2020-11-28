@@ -116,6 +116,7 @@ namespace EAClock {
 				}
 				
 				lcd8::Write(cui->GetConstBufferPtr());
+				cui->OnUiUpdate();
 			}
 			
 			public:

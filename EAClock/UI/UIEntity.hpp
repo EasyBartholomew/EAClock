@@ -54,6 +54,9 @@ namespace EAClock {
 				_focus = FALSE;
 			}
 			
+			virtual void OnUiUpdate()
+			{ }
+			
 			virtual u8_t* GetBufferPtr() {
 				return _buffer;
 			}

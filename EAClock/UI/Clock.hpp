@@ -53,12 +53,27 @@ namespace EAClock {
 				_up->SetLongClickHandler(OnUpLongClick);
 			}
 			
+			void TurnAlarm(const l_t& status) {
+				_alarmOn = status;
+			}
+			
+			void BlinkCentralPoint() {
+				if(_alarmOn) {
+					if(!lcd8::PointAt(lcd8position::Second)) {
+						lcd8::PointAt(lcd8position::Second, TRUE);
+					}
+				}
+				else {
+					lcd8::PointAt(lcd8position::Second, _timeValue.GetSeconds() & 1);
+				}
+			}
+			
 			static void OnSelectLongClick(const Button& sender) {
 				instance.GiveControlTo(UI_STOPWATCH);
 			}
 			
 			static void OnUpClick(const Button& sender) {
-				
+				instance.TurnAlarm(!instance._alarmOn);
 			}
 			
 			static void OnUpLongClick(const Button& sender) {
@@ -105,6 +120,10 @@ namespace EAClock {
 				}
 			}
 			
+			void OnUiUpdate() override {
+				this->BlinkCentralPoint();
+			}
+			
 			void OnFocus() override {
 				
 				this->RestoreHandlers();
@@ -113,6 +132,7 @@ namespace EAClock {
 			
 			void OnFocusLost() override {
 				
+				lcd8::PointAt(lcd8position::Second, FALSE);
 				UIEntityTime::OnFocusLost();
 			}
 			

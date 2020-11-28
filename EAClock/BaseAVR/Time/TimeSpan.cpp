@@ -38,7 +38,7 @@ namespace BaseAVR {
 		}
 
 		tu_t TimeSpan::GetTotalHours() const {
-			return ((_total / 1000) / 60) / 24;
+			return ((_total / 1000) /60 /60) / 24;
 		}
 		
 		

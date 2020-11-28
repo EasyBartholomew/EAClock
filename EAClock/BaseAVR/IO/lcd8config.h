@@ -23,6 +23,7 @@ namespace BaseAVR {
 		enum class lcd8symbol : u8_t {
 			None = 0x00,
 			Unknown = 0xff,
+			EOL = 0xfe,
 			Point = 0x80,
 			Zero = 0b00111111,
 			One = 0b00000110,
@@ -46,6 +47,7 @@ namespace BaseAVR {
 			Letterh = 0b01110100,
 			LetterJ = 0b00011110,
 			LetterL = 0b00111000,
+			LetterO = Zero,
 			LetterP = 0b01110011,
 			Letterq = 0b01100111,
 			LetterS = 0b01101101,
@@ -54,7 +56,6 @@ namespace BaseAVR {
 			LetterX = 0b01110110,
 			LetterY = 0b01101110,
 			LetterZ = 0b01011011
-			
 		};
 		
 		inline lcd8symbol dig2lcd(const u8_t& digit) {
@@ -103,6 +104,36 @@ namespace BaseAVR {
 				case '_':
 				return lcd8symbol::LowLine;
 				
+				case '0':
+				return lcd8symbol::Zero;
+				
+				case '1':
+				return lcd8symbol::One;
+				
+				case '2':
+				return lcd8symbol::Two;
+				
+				case '3':
+				return lcd8symbol::Three;
+				
+				case '4':
+				return lcd8symbol::Four;
+				
+				case '5':
+				return lcd8symbol::Five;
+				
+				case '6':
+				return lcd8symbol::Six;
+				
+				case '7':
+				return lcd8symbol::Seven;
+				
+				case '8':
+				return lcd8symbol::Eight;
+				
+				case '9':
+				return lcd8symbol::Nine;
+				
 				case 'A':
 				return lcd8symbol::LetterA;
 				
@@ -129,6 +160,9 @@ namespace BaseAVR {
 				
 				case 'L':
 				return lcd8symbol::LetterL;
+				
+				case 'O':
+				return lcd8symbol::LetterO;
 				
 				case 'P':
 				return lcd8symbol::LetterP;
@@ -181,6 +215,9 @@ namespace BaseAVR {
 				case 'l':
 				return lcd8symbol::LetterL;
 				
+				case 'o':
+				return lcd8symbol::LetterO;
+				
 				case 'p':
 				return lcd8symbol::LetterP;
 				
@@ -204,6 +241,9 @@ namespace BaseAVR {
 				
 				case 'z':
 				return lcd8symbol::LetterZ;
+				
+				case 'G':
+				return lcd8symbol::EOL;
 				
 				case 0xff:
 				return lcd8symbol::None;

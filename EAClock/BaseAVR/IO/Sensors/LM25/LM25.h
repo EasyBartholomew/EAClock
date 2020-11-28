@@ -8,7 +8,7 @@ namespace BaseAVR {
 			class LM25 {
 				
 				private:
-				l_t is_inited;
+				static l_t is_inited;
 				
 				LM25();
 				LM25(const LM25&);

@@ -44,7 +44,7 @@ namespace EAClock {
 				this->Reset();
 			}
 			
-			void OnFocus() {
+			void OnFocus() override {
 				_up->SetClickHandler((_ButtonEventCallBack)Stopwatch::OnUpClick);
 				_up->SetLongClickHandler((_ButtonEventCallBack)Stopwatch::OnUpLongClick);
 				
@@ -53,7 +53,15 @@ namespace EAClock {
 					firstStart = FALSE;
 				}
 				
+				lcd8::PointAt(lcd8position::Fourth, FALSE);
+				
 				UIEntityTime::OnFocus();
+			}
+			
+			void OnFocusLost() override {
+				
+				lcd8::PointAt(lcd8position::Fourth, TRUE);
+				UIEntityTime::OnFocusLost();
 			}
 			
 			static Stopwatch* GetInstance(const TimeSpan& startVal, pbutton_t up) {

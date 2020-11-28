@@ -70,6 +70,18 @@ namespace EAClock {
 				return FALSE;
 			}
 			
+			virtual l_t IsMainUIEntity() const {
+				return FALSE;
+			}
+			
+			virtual l_t IsTransitionTarget() const {
+				return 0;
+			}
+			
+			virtual fsize_t GetTransitionTarget() const {
+				return 0;
+			}
+			
 			virtual void Start() {
 				_state = TRUE;
 			}

@@ -9,7 +9,14 @@ namespace BaseAVR {
 	namespace IO {
 		namespace Sensors {
 			
+			l_t LM25::is_inited = FALSE;
+			
 			void LM25::Init() {
+				
+				if(LM25::is_inited)
+				return;
+				
+				_CL(ADCSRA);
 				
 				//Setting line to input
 				_SETL(LM25_DDR, LM25_LINE);
@@ -27,11 +34,11 @@ namespace BaseAVR {
 				
 				//Setting line to check
 				ADMUX |= 0x0f & LM25_LINE;
-				
-				_CL(ADCSRA);
-				
+												
 				//Enable the ADC
 				_SETH(ADCSRA, ADEN);
+				
+				is_inited = TRUE;
 			}
 			
 			u16_t LM25::MeasureAndGetCValue() {
@@ -50,8 +57,8 @@ namespace BaseAVR {
 			}
 			
 			u16_t LM25::_dataconvert(const u16_t& code) {
-				constexpr auto mul = 150.0/307.0;
-				return (u16_t)(round(mul*code*10));
+				constexpr auto mul = 150.0/307.0 * 10.0;
+				return (u16_t)(round(mul*code));
 			}
 		}
 	}

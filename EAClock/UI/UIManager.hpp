@@ -12,15 +12,15 @@
 #include "UIEntity.hpp"
 #include "UIEntityTime.hpp"
 #include "Stopwatch.hpp"
-
+#include "Clock.hpp"
 
 using namespace BaseAVR;
 using namespace BaseAVR::HAL;
 using namespace BaseAVR::IO;
 using namespace BaseAVR::Time;
 
-#define UI_CLOCK 0
-#define UI_STOPWATCH 1
+#define UI_MAIN 0
+
 
 namespace EAClock {
 	namespace UI {
@@ -40,36 +40,17 @@ namespace EAClock {
 			static pui_entity uis[UIManager::UIS_MAX];
 			static fsize_t current_ui;
 			
-			static void OnUpdate() {
-				for(register fsize_t i = 0; i < UIS_MAX; i++) {
-					pui_entity cui = uis[i];
-					
-					if(cui == nullptr)
-					continue;
-					
-					if(cui->IsTimeEntity()) {
-						auto tui = (pui_entitytime)cui;
-						tui->OnUpdate(updater->GetInterval());
-					}
-				}
-			}
-			
-			static void OnUiUpdate() {
-				auto cui = uis[current_ui];
-				
-				if(cui == nullptr)
-				return;
-				
-				lcd8::Write(cui->GetConstBufferPtr());
+			static pui_entity GetCurrentUI() {
+				return uis[current_ui];
 			}
 			
 			static void GoToUi(const fsize_t& idx) {
-				auto cui = uis[current_ui];
+				auto cui = UIManager::GetCurrentUI();
 				cui->OnFocusLost();
 				
 				current_ui = idx;
 				
-				cui = uis[current_ui];
+				cui = UIManager::GetCurrentUI();
 				cui->OnFocus();
 			}
 			
@@ -98,12 +79,43 @@ namespace EAClock {
 			}
 			
 			static void OnSelectLongClick(const Button& sender){
-				if(current_ui == UI_CLOCK) {
-					GoToUi(UI_STOPWATCH);
+				GoToUi(UI_MAIN);
+			}
+			
+			static void OnUpdate() {
+				for(register fsize_t i = 0; i < UIS_MAX; i++) {
+					pui_entity cui = uis[i];
+					
+					if(cui == nullptr)
+					continue;
+					
+					if(!cui->IsStarted())
+					continue;
+					
+					if(cui->IsTimeEntity()) {
+						auto tui = (pui_entitytime)cui;
+						tui->OnUpdate(updater->GetInterval());
+					}
 				}
-				else if(current_ui == UI_STOPWATCH) {
-					GoToUi(UI_CLOCK);
+			}
+			
+			static void OnUiUpdate() {
+				auto cui = UIManager::GetCurrentUI();
+				
+				if(cui == nullptr)
+				return;
+				
+				if(cui->IsMainUIEntity()) {
+					
+					if(cui->IsTransitionTarget()) {
+						
+						select->SetLongClickHandler(OnSelectLongClick);
+						UIManager::GoToUi(cui->GetTransitionTarget());
+						return;
+					}
 				}
+				
+				lcd8::Write(cui->GetConstBufferPtr());
 			}
 			
 			public:
@@ -114,6 +126,7 @@ namespace EAClock {
 					uis[i] = nullptr;
 				}
 				
+				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TRUE, select, up, down);
 				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan(0), up);
 				
 				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
@@ -132,12 +145,11 @@ namespace EAClock {
 				uiUpdater->SetAutoReset(TRUE);
 				uiUpdater->SubscribeHandler(OnUiUpdate);
 				
-				GoToUi(UI_STOPWATCH);
+				GoToUi(UI_MAIN);
 				
 				updater->Start();
 				uiUpdater->Start();
 			}
-			
 		};
 		
 		pui_entity UIManager::uis[UIManager::UIS_MAX];

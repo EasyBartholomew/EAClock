@@ -273,6 +273,9 @@
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="UI\Clock.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="UI\Stopwatch.hpp">
       <SubType>compile</SubType>
     </Compile>

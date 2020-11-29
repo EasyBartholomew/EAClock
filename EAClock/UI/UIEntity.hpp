@@ -5,12 +5,18 @@
 
 using namespace BaseAVR::IO;
 
+#define INVALID_HANDLE 0xff
+
 namespace EAClock {
 	namespace UI {
 		
 		typedef Button* pbutton_t;
 		
 		class UIEntity	{
+			
+			private:
+			
+			fsize_t _handle;
 			
 			public:
 			
@@ -30,7 +36,7 @@ namespace EAClock {
 				_state = state;
 				_up = up;
 				_down = down;
-				
+				_handle = INVALID_HANDLE;
 				_focus = FALSE;
 			}
 			
@@ -41,6 +47,14 @@ namespace EAClock {
 			{ }
 			
 			public:
+			
+			fsize_t GetHandle() {
+				return _handle;
+			}
+			
+			void SetHandle(const fsize_t& handle) {
+				_handle = handle;
+			}
 			
 			virtual l_t IsFocused() {
 				return _focus;

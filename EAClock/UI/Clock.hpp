@@ -3,10 +3,12 @@
 #include "UIEntityTime.hpp"
 #include "../BaseAVR/Audio/HAL/avrhwaudio.h"
 
+#include "Stopwatch.hpp"
+#include "TimeSelector.hpp"
+
 using namespace BaseAVR::Audio::HAL;
 
 #define ALARM_FREQ 1000
-#define UI_STOPWATCH 1
 
 namespace EAClock {
 	namespace UI {
@@ -63,7 +65,7 @@ namespace EAClock {
 			}
 			
 			static void OnSelectLongClick(const Button& sender) {
-				instance.GiveControlTo(UI_STOPWATCH);
+				instance.GiveControlTo(Stopwatch::GetInstance()->GetHandle());
 			}
 			
 			static void OnUpClick(const Button& sender) {
@@ -72,6 +74,12 @@ namespace EAClock {
 			
 			static void OnUpLongClick(const Button& sender) {
 				
+				auto selector = TimeSelector::GetInstance();
+				selector->Select(
+				instance.GetTimeValue(),
+				SelectionPair::Low,
+				ShowMode::hh_mm,
+				instance.GetHandle());
 			}
 			
 			static void OnDownClick(const Button& sender) {
@@ -143,6 +151,10 @@ namespace EAClock {
 			Button* down) {
 				
 				instance = Clock(initTime, alarmTime, state, select, up, down);
+				return &instance;
+			}
+			
+			static Clock* GetInstance() {
 				return &instance;
 			}
 			

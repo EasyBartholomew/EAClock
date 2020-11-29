@@ -13,6 +13,7 @@
 #include "UIEntityTime.hpp"
 #include "Stopwatch.hpp"
 #include "Clock.hpp"
+#include "TimeSelector.hpp"
 
 using namespace BaseAVR;
 using namespace BaseAVR::HAL;
@@ -23,6 +24,9 @@ using namespace BaseAVR::Time;
 #define UI_UPDATE_INTERVAL 50
 
 #define UI_MAIN 0
+#define UI_STOPWATCH 1
+#define UI_SELECTOR 2
+#define UI_TIMER 3
 
 namespace EAClock {
 	namespace UI {
@@ -46,11 +50,21 @@ namespace EAClock {
 				return uis[current_ui];
 			}
 			
+			static void BlockButtons() {
+				up->SetClickHandler(nullptr);
+				up->SetLongClickHandler(nullptr);
+				
+				down->SetClickHandler(nullptr);
+				down->SetLongClickHandler(nullptr);
+			}
+			
 			static void GoToUi(const fsize_t& idx) {
 				auto cui = UIManager::GetCurrentUI();
 				cui->OnFocusLost();
 				
 				current_ui = idx;
+				
+				UIManager::BlockButtons();
 				
 				cui = UIManager::GetCurrentUI();
 				cui->OnFocus();
@@ -80,8 +94,10 @@ namespace EAClock {
 				UIManager::ChangeShowMode();
 			}
 			
-			static void OnSelectLongClick(const Button& sender){
-				GoToUi(UI_MAIN);
+			static void OnSelectLongClick(const Button& sender) {
+				
+				auto cui = UIManager::GetCurrentUI();
+				GoToUi(cui->GetTransitionTarget());
 			}
 			
 			static void OnUpdate() {
@@ -107,14 +123,11 @@ namespace EAClock {
 				if(cui == nullptr)
 				return;
 				
-				if(cui->IsMainUIEntity()) {
+				if(cui->IsTransitionTarget()) {
 					
-					if(cui->IsTransitionTarget()) {
-						
-						select->SetLongClickHandler(OnSelectLongClick);
-						UIManager::GoToUi(cui->GetTransitionTarget());
-						return;
-					}
+					select->SetLongClickHandler(OnSelectLongClick);
+					UIManager::GoToUi(cui->GetTransitionTarget());
+					return;
 				}
 				
 				lcd8::Write(cui->GetConstBufferPtr());
@@ -130,7 +143,13 @@ namespace EAClock {
 				}
 				
 				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TimeSpan(0,12,20,0,0), TRUE, select, up, down);
-				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan(0), up);
+				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan::Zero, up);
+				uis[UI_SELECTOR] = TimeSelector::InitAndGetInstance(up, down);
+				
+				for(register fsize_t i = 0; i < UIS_MAX; i++) {
+					if(uis[i] != nullptr)
+					uis[i]->SetHandle(i);
+				}
 				
 				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
 				up = Button::GetNextInstance(VLine(hwio_base::D, D1, IOMode::Input));

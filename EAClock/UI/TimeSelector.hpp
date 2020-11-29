@@ -3,6 +3,8 @@
 #include "../BaseAVR/globaldef.h"
 #include "UIEntityTime.hpp"
 
+#define DEFAULT_BLINK_INTEVAL 750
+
 namespace EAClock {
 	namespace UI {
 		
@@ -18,12 +20,17 @@ namespace EAClock {
 			
 			static TimeSelector instance;
 			
-			Timer* _updater;
 			SelectionPair _pair;
 			l_t _showState;
+			TimeSpan _blinkInterval;
+			TimeSpan _timeToUpdate;
 			
+			fsize_t _backHandle;
 			
 			u8_t * _GetBuffer() const {
+				
+				const char blinkSymbol = '_';
+				
 				if(_showState || !this->IsStarted()) {
 					return _buffer;
 				}
@@ -31,12 +38,12 @@ namespace EAClock {
 				switch (_pair)
 				{
 					case SelectionPair::Low: {
-						_buffer[2] = _buffer[3] = '_';
+						_buffer[2] = _buffer[3] = blinkSymbol;
 						return _buffer;
 					}
 					
 					case SelectionPair::High: {
-						_buffer[0] = _buffer[1] = '_';
+						_buffer[0] = _buffer[1] = blinkSymbol;
 						return _buffer;
 					}
 					
@@ -106,14 +113,30 @@ namespace EAClock {
 				instance.ChangeByButtonClick(sender, 10);
 			}
 			
-			public:
+			void _reset() {
+				_showState = FALSE;
+				_backHandle = 0;
+				_timeToUpdate = TimeSpan::Zero;
+				_blinkInterval = TimeSpan(DEFAULT_BLINK_INTEVAL);
+			}
 			
 			TimeSelector(
-			const TimeSpan& pivot,
 			pbutton_t up,
 			pbutton_t down)
 			: UIEntityTime(FALSE, up, down) {
-				UIEntityTime::SetTimeValue(pivot);
+				
+				_reset();
+				_pair = SelectionPair::Low;
+			}
+			
+			public:
+			
+			TimeSpan GetBlinkInterval() const {
+				return _blinkInterval;
+			}
+			
+			void SetBlinkInterval(const TimeSpan& blinkInterval) {
+				_blinkInterval = blinkInterval;
 			}
 			
 			u8_t const * GetConstBufferPtr() const override {
@@ -124,21 +147,80 @@ namespace EAClock {
 				return _GetBuffer();
 			}
 			
-			void Select() {
-				UIEntityTime::Start();
+			void Select(
+			const TimeSpan& base,
+			const SelectionPair& pair,
+			const ShowMode& showMode,
+			const fsize_t& self) {
+				_backHandle = self;
+				_pair = pair;
+				UIEntityTime::SetTimeValue(base);
+				this->SetShowMode(showMode);
 			}
 			
-			void OnShowModeChanged(const ShowMode& newMode) {
+			void OnShowModeChanged(const ShowMode& newMode) override {
 				
-				auto mode = newMode;
-				
-				if(mode == ShowMode::ss_th) {
-					mode = (ShowMode)0;
+				if(_pair == SelectionPair::Low){
+					_pair = SelectionPair::High;
 				}
+				else if(_pair == SelectionPair::High) {
+					_pair = SelectionPair::Low;
+				}
+			}
+			
+			void OnFocus() override {
 				
-				UIEntityTime::OnShowModeChanged(mode);
+				lcd8::PointAt(lcd8position::Second, TRUE);
+				
+				_up->SetClickHandler(OnChangeButtonClick);
+				_down->SetClickHandler(OnChangeButtonClick);
+				
+				_up->SetLongClickHandler(OnChangeButtonLongClick);
+				_down->SetLongClickHandler(OnChangeButtonLongClick);
+				
+				this->Start();
+				
+				UIEntityTime::OnFocus();
+			}
+			
+			void OnFocusLost() override {
+				
+				lcd8::PointAt(lcd8position::Second, FALSE);
+				
+				this->Stop();
+				
+				_reset();
+				
+				UIEntityTime::OnFocusLost();
+			}
+			
+			void OnUpdate(const TimeSpan& delta) override {
+				
+				_timeToUpdate = _timeToUpdate + delta;
+				
+				if(_timeToUpdate >= _blinkInterval) {
+					_timeToUpdate = TimeSpan::Zero;
+					_showState = !_showState;
+				}
+			}
+			
+			fsize_t GetTransitionTarget() const override {
+				return _backHandle;
+			}
+			
+			static TimeSelector* GetInstance() {
+				return &instance;
+			}
+			
+			static TimeSelector* InitAndGetInstance(pbutton_t up, pbutton_t down) {
+				instance = TimeSelector(up, down);
+				return TimeSelector::GetInstance();
 			}
 		};
+		
+		TimeSelector TimeSelector::instance(nullptr, nullptr);
+		
+		typedef TimeSelector* pui_timeselector;
 	}
 }
 

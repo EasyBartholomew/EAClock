@@ -70,6 +70,10 @@ namespace EAClock {
 				
 				return &instance;
 			}
+			
+			static Stopwatch* GetInstance() {
+				return &instance;
+			}
 		};
 		
 		Stopwatch Stopwatch::instance(TimeSpan(0), nullptr);

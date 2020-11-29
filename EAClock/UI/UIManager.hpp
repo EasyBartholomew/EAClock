@@ -19,8 +19,10 @@ using namespace BaseAVR::HAL;
 using namespace BaseAVR::IO;
 using namespace BaseAVR::Time;
 
-#define UI_MAIN 0
+#define ENTITY_UPDATE_INTERVAL 25
+#define UI_UPDATE_INTERVAL 50
 
+#define UI_MAIN 0
 
 namespace EAClock {
 	namespace UI {
@@ -127,7 +129,7 @@ namespace EAClock {
 					uis[i] = nullptr;
 				}
 				
-				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TRUE, select, up, down);
+				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TimeSpan(0,12,20,0,0), TRUE, select, up, down);
 				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan(0), up);
 				
 				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
@@ -138,20 +140,22 @@ namespace EAClock {
 				select->SetClickHandler(OnSelectClick);
 				select->SetLongClickHandler(OnSelectLongClick);
 				
-				updater = Timer::GetNextInstance(10);
+				updater = Timer::GetNextInstance(ENTITY_UPDATE_INTERVAL);
 				updater->SetAutoReset(TRUE);
 				updater->SubscribeHandler(OnUpdate);
 				
-				uiUpdater = Timer::GetNextInstance(20);
+				uiUpdater = Timer::GetNextInstance(UI_UPDATE_INTERVAL);
 				uiUpdater->SetAutoReset(TRUE);
 				uiUpdater->SubscribeHandler(OnUiUpdate);
-				
+			}
+			
+			static void Start() {
 				GoToUi(UI_MAIN);
-				
 				updater->Start();
 				uiUpdater->Start();
 			}
 		};
+		
 		
 		pui_entity UIManager::uis[UIManager::UIS_MAX];
 		fsize_t UIManager::current_ui = 0;

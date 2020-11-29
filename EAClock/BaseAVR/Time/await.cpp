@@ -8,14 +8,6 @@ namespace BaseAVR {
 	
 	namespace Await {
 		
-		void While(const l_t& expr) {
-			while(expr);
-		}
-		
-		void WhileNot(const l_t& expr) {
-			while(!expr);
-		}
-		
 		void ForMs(const tu_t& ms) {
 			avrhwtimer0::Init();
 			

@@ -66,13 +66,13 @@ namespace BaseAVR {
 		}
 		
 		void lcd8::Write(u8_t const*const digits, const lcd8position& pointPosition){
-			for(register u8_t i = 0; i < LCD8_MAXDIG; i++) {
+			for(register fsize_t i = 0, j = LCD8_MAXDIG - 1; i < LCD8_MAXDIG; i++, j--) {
 				
 				if(digits[i] == 'G') {
 					return;
 				}
 				
-				lcd8::Write(digits[i], (lcd8position)i, TOBYTE(pointPosition) == i);
+				lcd8::Write(digits[i], (lcd8position)j, TOBYTE(pointPosition) == j);
 			}
 		}
 		

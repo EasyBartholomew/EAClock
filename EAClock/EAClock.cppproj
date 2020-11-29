@@ -279,6 +279,9 @@
     <Compile Include="UI\Stopwatch.hpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="UI\TimeSelector.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="UI\UIEntity.hpp">
       <SubType>compile</SubType>
     </Compile>

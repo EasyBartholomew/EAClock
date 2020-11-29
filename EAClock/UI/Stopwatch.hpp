@@ -60,7 +60,8 @@ namespace EAClock {
 			
 			void OnFocusLost() override {
 				
-				lcd8::PointAt(lcd8position::Fourth, TRUE);
+				lcd8::PointAt(lcd8position::Fourth, this->IsStarted());
+				
 				UIEntityTime::OnFocusLost();
 			}
 			

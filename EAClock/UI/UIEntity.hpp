@@ -26,7 +26,7 @@ namespace EAClock {
 			pbutton_t _up;
 			pbutton_t _down;
 			
-			UIEntity(const l_t& state, Button* up, Button* down) {
+			UIEntity(const l_t& state, pbutton_t up, pbutton_t down) {
 				_state = state;
 				_up = up;
 				_down = down;

@@ -26,6 +26,7 @@ namespace EAClock {
 			
 			Clock(
 			const TimeSpan& initTime,
+			const TimeSpan& alarmTime,
 			const l_t& state,
 			pbutton_t select,
 			pbutton_t up,
@@ -33,7 +34,7 @@ namespace EAClock {
 			: UIEntityTime(state, up, down) {
 				
 				this->SetTimeValue(initTime);
-				_alarmTime = TimeSpan(0);
+				_alarmTime = alarmTime;
 				_alarmOn = FALSE;
 				_transition = 0;
 				
@@ -58,14 +59,7 @@ namespace EAClock {
 			}
 			
 			void BlinkCentralPoint() {
-				if(_alarmOn) {
-					if(!lcd8::PointAt(lcd8position::Second)) {
-						lcd8::PointAt(lcd8position::Second, TRUE);
-					}
-				}
-				else {
-					lcd8::PointAt(lcd8position::Second, _timeValue.GetSeconds() & 1);
-				}
+				lcd8::PointAt(lcd8position::Second, _alarmOn ? TRUE : _timeValue.GetSeconds() & 1);
 			}
 			
 			static void OnSelectLongClick(const Button& sender) {
@@ -127,23 +121,28 @@ namespace EAClock {
 			void OnFocus() override {
 				
 				this->RestoreHandlers();
+				UIEntityTime::SetShowMode(ShowMode::hh_mm);
+				this->GiveControlTo(0);
+				
 				UIEntityTime::OnFocus();
 			}
 			
 			void OnFocusLost() override {
 				
 				lcd8::PointAt(lcd8position::Second, FALSE);
+				
 				UIEntityTime::OnFocusLost();
 			}
 			
 			static Clock* GetInstance(
 			const TimeSpan& initTime,
+			const TimeSpan& alarmTime,
 			const l_t& state,
 			pbutton_t select,
 			Button* up,
 			Button* down) {
 				
-				instance = Clock(initTime, state, select, up, down);
+				instance = Clock(initTime, alarmTime, state, select, up, down);
 				return &instance;
 			}
 			
@@ -161,7 +160,7 @@ namespace EAClock {
 			
 		};
 		
-		Clock Clock::instance(TimeSpan(0), FALSE, nullptr, nullptr, nullptr);
+		Clock Clock::instance(TimeSpan(0), TimeSpan(0), FALSE, nullptr, nullptr, nullptr);
 	}
 }
 

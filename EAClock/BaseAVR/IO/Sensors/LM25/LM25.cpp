@@ -18,6 +18,12 @@ namespace BaseAVR {
 				
 				_CL(ADCSRA);
 				
+				//Enable the ADC
+				_SETH(ADCSRA, ADEN);
+				_SETH(ADCSRA, ADPS0);
+				_SETH(ADCSRA, ADPS1);
+				_SETH(ADCSRA, ADPS2);
+				
 				//Setting line to input
 				_SETL(LM25_DDR, LM25_LINE);
 				
@@ -34,9 +40,6 @@ namespace BaseAVR {
 				
 				//Setting line to check
 				ADMUX |= 0x0f & LM25_LINE;
-												
-				//Enable the ADC
-				_SETH(ADCSRA, ADEN);
 				
 				is_inited = TRUE;
 			}
@@ -47,8 +50,7 @@ namespace BaseAVR {
 				_SETH(ADCSRA, ADSC);
 				
 				//Await for convert to end
-				Await::WhileNot(_ISH(ADCSRA, ADIF));
-				Await::ForUs(5);
+				while(_ISL(ADCSRA, ADIF));
 				
 				u16_t adcCode = ADCL;
 				adcCode |= (ADCH << 8);

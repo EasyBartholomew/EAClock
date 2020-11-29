@@ -19,7 +19,12 @@ int main() {
 	Button::Init();
 	__SEI
 	
+	u8_t defargs[4] = {0,1,2,3};
+	lcd8::Write(defargs);
+	Await::ForMs(3000);
+	
 	EAClock::UI::UIManager::Init();
+	EAClock::UI::UIManager::Start();
 	
 	while(1){
 		Button::CallSubroutines();

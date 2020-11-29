@@ -6,8 +6,6 @@ namespace BaseAVR {
 	
 	namespace Await {
 		
-		void While(const l_t&);
-		void WhileNot(const l_t&);
 		void ForMs(const tu_t&);
 		void ForUs(const tu_t&);
 	}

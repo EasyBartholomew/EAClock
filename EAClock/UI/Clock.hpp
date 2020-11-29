@@ -80,6 +80,8 @@ namespace EAClock {
 				SelectionPair::Low,
 				ShowMode::hh_mm,
 				instance.GetHandle());
+				
+				instance.GiveControlTo(selector->GetHandle());
 			}
 			
 			static void OnDownClick(const Button& sender) {
@@ -130,15 +132,13 @@ namespace EAClock {
 				
 				this->RestoreHandlers();
 				UIEntityTime::SetShowMode(ShowMode::hh_mm);
-				this->GiveControlTo(0);
-				
 				UIEntityTime::OnFocus();
 			}
 			
 			void OnFocusLost() override {
 				
 				lcd8::PointAt(lcd8position::Second, FALSE);
-				
+				this->GiveControlTo(0);
 				UIEntityTime::OnFocusLost();
 			}
 			

@@ -59,6 +59,7 @@ namespace EAClock {
 			}
 			
 			static void GoToUi(const fsize_t& idx) {
+				
 				auto cui = UIManager::GetCurrentUI();
 				cui->OnFocusLost();
 				

@@ -13,6 +13,12 @@ using namespace BaseAVR::Audio::HAL;
 namespace EAClock {
 	namespace UI {
 
+		enum class SelectionTarget : u8_t {
+			None,
+			Time,
+			AlarmTime
+		};
+
 		class Clock : public UIEntityTime {
 			
 			private:
@@ -21,8 +27,8 @@ namespace EAClock {
 			
 			l_t _alarmOn;
 			TimeSpan _alarmTime;
-			
 			fsize_t _transition;
+			SelectionTarget _selectionTarget;
 			
 			pbutton_t _select;
 			
@@ -39,7 +45,7 @@ namespace EAClock {
 				_alarmTime = alarmTime;
 				_alarmOn = FALSE;
 				_transition = 0;
-				
+				_selectionTarget = SelectionTarget::None;
 				_select = select;
 				
 			}
@@ -51,9 +57,10 @@ namespace EAClock {
 			void RestoreHandlers() {
 				_up->SetClickHandler(OnUpClick);
 				_down->SetClickHandler(OnDownClick);
-				_select->SetLongClickHandler(OnSelectLongClick);
 				
 				_up->SetLongClickHandler(OnUpLongClick);
+				
+				_select->SetLongClickHandler(OnSelectLongClick);
 			}
 			
 			void TurnAlarm(const l_t& status) {
@@ -62,6 +69,66 @@ namespace EAClock {
 			
 			void BlinkCentralPoint() {
 				lcd8::PointAt(lcd8position::Second, _alarmOn ? TRUE : _timeValue.GetSeconds() & 1);
+			}
+			
+			l_t IsSelectionPreformed() {
+				return _selectionTarget != SelectionTarget::None;
+			}
+			
+			void Select(const SelectionTarget& target) {
+				
+				auto selector = TimeSelector::GetInstance();
+				
+				TimeSpan pivot, temp;
+				
+				switch (target)	{
+					case SelectionTarget::Time:
+					temp = this->GetTimeValue();
+					break;
+					
+					case  SelectionTarget::AlarmTime:
+					temp = _alarmTime;
+					break;
+					
+					default:
+					return;
+					break;
+				}
+				
+				pivot.AddHours(temp.GetHours())
+				.AddMinutes(temp.GetMinutes());
+				
+				selector->Select(
+				pivot,
+				SelectionPair::Low,
+				ShowMode::hh_mm,
+				instance.GetHandle());
+				
+				instance.GiveControlTo(selector->GetHandle());
+				instance._selectionTarget = target;
+				this->Stop();
+			}
+			
+			void OnSelectionEnd() {
+				
+				auto selector = TimeSelector::GetInstance();
+				auto selectionResult = selector->GetTimeValue();
+				
+				switch (_selectionTarget) {
+					case SelectionTarget::Time:
+					UIEntityTime::SetTimeValue(selectionResult);
+					break;
+					
+					case SelectionTarget::AlarmTime:
+					_alarmTime = selectionResult;
+					break;
+					
+					default:
+					break;
+				}
+				
+				_selectionTarget = SelectionTarget::None;
+				this->Start();
 			}
 			
 			static void OnSelectLongClick(const Button& sender) {
@@ -73,19 +140,11 @@ namespace EAClock {
 			}
 			
 			static void OnUpLongClick(const Button& sender) {
-				
-				auto selector = TimeSelector::GetInstance();
-				selector->Select(
-				instance.GetTimeValue(),
-				SelectionPair::Low,
-				ShowMode::hh_mm,
-				instance.GetHandle());
-				
-				instance.GiveControlTo(selector->GetHandle());
+				instance.Select(SelectionTarget::AlarmTime);
 			}
 			
 			static void OnDownClick(const Button& sender) {
-				
+				instance.Select(SelectionTarget::Time);
 			}
 			
 			static void OnAlarmStopRinging(const Button& sender) {
@@ -129,6 +188,10 @@ namespace EAClock {
 			}
 			
 			void OnFocus() override {
+				
+				if(this->IsSelectionPreformed()) {
+					this->OnSelectionEnd();
+				}
 				
 				this->RestoreHandlers();
 				UIEntityTime::SetShowMode(ShowMode::hh_mm);

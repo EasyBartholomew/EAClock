@@ -54,15 +54,6 @@ namespace EAClock {
 				_transition = target;
 			}
 			
-			void RestoreHandlers() {
-				_up->SetClickHandler(OnUpClick);
-				_down->SetClickHandler(OnDownClick);
-				
-				_up->SetLongClickHandler(OnUpLongClick);
-				
-				_select->SetLongClickHandler(OnSelectLongClick);
-			}
-			
 			void TurnAlarm(const l_t& status) {
 				_alarmOn = status;
 			}
@@ -145,6 +136,15 @@ namespace EAClock {
 			
 			static void OnDownClick(const Button& sender) {
 				instance.Select(SelectionTarget::Time);
+			}
+			
+			void RestoreHandlers() {
+				_up->SetClickHandler(OnUpClick);
+				_down->SetClickHandler(OnDownClick);
+				
+				_up->SetLongClickHandler(OnUpLongClick);
+				
+				_select->SetLongClickHandler(OnSelectLongClick);
 			}
 			
 			static void OnAlarmStopRinging(const Button& sender) {

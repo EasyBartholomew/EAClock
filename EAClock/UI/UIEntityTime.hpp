@@ -34,6 +34,37 @@ namespace EAClock {
 				_timeValue = time;
 			}
 			
+			u8_t * _GetBuffer() const override {
+				switch(this->GetShowMode()) {
+					
+					case ShowMode::hh_mm: {
+						_buffer[0] = _timeValue.GetHours() / 10;
+						_buffer[1] = _timeValue.GetHours() % 10;
+						_buffer[2] = _timeValue.GetMinutes() / 10;
+						_buffer[3] = _timeValue.GetMinutes() % 10;
+						
+					}break;
+					
+					case ShowMode::mm_ss: {
+						_buffer[0] = _timeValue.GetMinutes() / 10;
+						_buffer[1] = _timeValue.GetMinutes() % 10;
+						_buffer[2] = _timeValue.GetSeconds() / 10;
+						_buffer[3] = _timeValue.GetSeconds() % 10;
+						
+					}break;
+					
+					case ShowMode::ss_th: {
+						_buffer[0] = _timeValue.GetSeconds() / 10;
+						_buffer[1] = _timeValue.GetSeconds() % 10;
+						_buffer[2] = _timeValue.GetMilliseconds() / 100;
+						_buffer[3] = _timeValue.GetMilliseconds() / 10;
+					}break;
+					
+				}
+				
+				return UIEntity::_GetBuffer();
+			}
+			
 			public:
 			
 			void SetShowMode(const ShowMode& mode) {
@@ -46,70 +77,6 @@ namespace EAClock {
 			
 			virtual TimeSpan GetTimeValue() const {
 				return _timeValue;
-			}
-			
-			virtual u8_t const* GetConstBufferPtr() const {
-				
-				switch(this->GetShowMode()) {
-					
-					case ShowMode::hh_mm: {
-						_buffer[0] = _timeValue.GetHours() / 10;
-						_buffer[1] = _timeValue.GetHours() % 10;
-						_buffer[2] = _timeValue.GetMinutes() / 10;
-						_buffer[3] = _timeValue.GetMinutes() % 10;
-						
-					}break;
-					
-					case ShowMode::mm_ss: {
-						_buffer[0] = _timeValue.GetMinutes() / 10;
-						_buffer[1] = _timeValue.GetMinutes() % 10;
-						_buffer[2] = _timeValue.GetSeconds() / 10;
-						_buffer[3] = _timeValue.GetSeconds() % 10;
-						
-					}break;
-					
-					case ShowMode::ss_th: {
-						_buffer[0] = _timeValue.GetSeconds() / 10;
-						_buffer[1] = _timeValue.GetSeconds() % 10;
-						_buffer[2] = _timeValue.GetMilliseconds() / 100;
-						_buffer[3] = _timeValue.GetMilliseconds() / 10;
-					}break;
-					
-				}
-				
-				return UIEntity::GetConstBufferPtr();
-			}
-			
-			virtual u8_t* GetBufferPtr() {
-				
-				switch(this->GetShowMode()) {
-					
-					case ShowMode::hh_mm: {
-						_buffer[0] = _timeValue.GetHours() / 10;
-						_buffer[1] = _timeValue.GetHours() % 10;
-						_buffer[2] = _timeValue.GetMinutes() / 10;
-						_buffer[3] = _timeValue.GetMinutes() % 10;
-						
-					}break;
-					
-					case ShowMode::mm_ss: {
-						_buffer[0] = _timeValue.GetMinutes() / 10;
-						_buffer[1] = _timeValue.GetMinutes() % 10;
-						_buffer[2] = _timeValue.GetSeconds() / 10;
-						_buffer[3] = _timeValue.GetSeconds() % 10;
-						
-					}break;
-					
-					case ShowMode::ss_th: {
-						_buffer[0] = _timeValue.GetSeconds() / 10;
-						_buffer[1] = _timeValue.GetSeconds() % 10;
-						_buffer[2] = _timeValue.GetMilliseconds() / 100;
-						_buffer[3] = _timeValue.GetMilliseconds() / 10;
-					}break;
-					
-				}
-				
-				return UIEntity::GetBufferPtr();
 			}
 			
 			virtual l_t IsTimeEntity() const {

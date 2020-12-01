@@ -3,7 +3,10 @@
 #include "../BaseAVR/globaldef.h"
 #include "UIEntityTime.hpp"
 
-#define DEFAULT_BLINK_INTEVAL 750
+#define DEFAULT_BLINK_INTEVAL 500
+#define DEFAULT_CLICK_CHANGE 1
+#define DEFAUL_LONGCLICK_CHANGE 10
+
 
 namespace EAClock {
 	namespace UI {
@@ -29,30 +32,31 @@ namespace EAClock {
 			
 			u8_t * _GetBuffer() const {
 				
-				const char blinkSymbol = '_';
+				const auto blinkSymbol = '_';
+				auto base = UIEntityTime::_GetBuffer();
 				
 				if(_showState || !this->IsStarted()) {
-					return _buffer;
+					return base;
 				}
 				
 				switch (_pair)
 				{
 					case SelectionPair::Low: {
-						_buffer[2] = _buffer[3] = blinkSymbol;
-						return _buffer;
+						base[2] = base[3] = blinkSymbol;
+						return base;
 					}
 					
 					case SelectionPair::High: {
-						_buffer[0] = _buffer[1] = blinkSymbol;
-						return _buffer;
+						base[0] = base[1] = blinkSymbol;
+						return base;
 					}
 					
 					default:
-					return _buffer;
+					return base;
 				}
 			}
 			
-			void ChangeOnValue(const l_t& sign, const tu_t& val) {
+			void ChangeOnValue(const s8_t& sign, const tu_t& val) {
 				
 				switch (this->GetShowMode()) {
 					case ShowMode::hh_mm: {
@@ -94,23 +98,25 @@ namespace EAClock {
 				
 				auto days = _timeValue.GetDays();
 				
+				if(_timeValue.GetTotalMilliseconds() < 0)
+				_timeValue.AddDays(1);
+				
 				if(days > 0)
 				_timeValue.SubtractDays(days);
 				
 			}
 			
 			void ChangeByButtonClick(const Button& sender, const tu_t& val) {
-				
-				l_t sign = (&sender == _up) ? 1 : -1;
+				s8_t sign = (&sender == _up) ? 1 : -1;
 				this->ChangeOnValue(sign, val);
 			}
 			
 			static void OnChangeButtonClick(const Button& sender) {
-				instance.ChangeByButtonClick(sender, 1);
+				instance.ChangeByButtonClick(sender, DEFAULT_CLICK_CHANGE);
 			}
 			
 			static void OnChangeButtonLongClick(const Button& sender) {
-				instance.ChangeByButtonClick(sender, 10);
+				instance.ChangeByButtonClick(sender, DEFAUL_LONGCLICK_CHANGE);
 			}
 			
 			void _reset() {

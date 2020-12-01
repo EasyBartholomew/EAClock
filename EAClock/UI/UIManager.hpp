@@ -61,14 +61,14 @@ namespace EAClock {
 			static void GoToUi(const fsize_t& idx) {
 				
 				auto cui = UIManager::GetCurrentUI();
-				cui->GetFocus();
+				cui->LoseFocus();
 				
 				current_ui = idx;
 				
 				UIManager::BlockButtons();
 				
 				cui = UIManager::GetCurrentUI();
-				cui->LoseFocus();
+				cui->GetFocus();
 			}
 			
 			static void ChangeShowMode() {
@@ -139,6 +139,10 @@ namespace EAClock {
 			
 			static void Init() {
 				
+				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
+				up = Button::GetNextInstance(VLine(hwio_base::D, D1, IOMode::Input));
+				down = Button::GetNextInstance(VLine(hwio_base::D, D2, IOMode::Input));
+				
 				for(register fsize_t i = 0; i < UIS_MAX; i++) {
 					uis[i] = nullptr;
 				}
@@ -152,9 +156,6 @@ namespace EAClock {
 					uis[i]->SetHandle(i);
 				}
 				
-				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
-				up = Button::GetNextInstance(VLine(hwio_base::D, D1, IOMode::Input));
-				down = Button::GetNextInstance(VLine(hwio_base::D, D2, IOMode::Input));
 				
 				select->SetHandlerPriority(Button::CallPriority::High);
 				select->SetClickHandler(OnSelectClick);

@@ -19,7 +19,7 @@ int main() {
 	Button::Init();
 	__SEI
 	
-	u8_t defargs[4] = {0,1,2,3};
+	u8_t defargs[] = "E-CL";
 	lcd8::Write(defargs);
 	Await::ForMs(3000);
 	

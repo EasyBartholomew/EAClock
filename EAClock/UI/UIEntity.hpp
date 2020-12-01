@@ -46,6 +46,10 @@ namespace EAClock {
 			UIEntity() : UIEntity(FALSE)
 			{ }
 			
+			virtual u8_t * _GetBuffer() const {
+				return _buffer;
+			}
+			
 			public:
 			
 			fsize_t GetHandle() {
@@ -96,11 +100,11 @@ namespace EAClock {
 			{ }
 			
 			virtual u8_t* GetBufferPtr() {
-				return _buffer;
+				return _GetBuffer();
 			}
 			
 			virtual u8_t const* GetConstBufferPtr() const {
-				return _buffer;
+				return _GetBuffer();
 			}
 			
 			virtual l_t IsStarted() const {

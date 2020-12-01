@@ -60,12 +60,36 @@ namespace EAClock {
 				return _focus;
 			}
 			
-			virtual void OnFocus() {
+			virtual void OnFocus()
+			{ }
+			
+			virtual void OnFocusLost()
+			{ }
+			
+			void GetFocus() {
 				_focus = TRUE;
+				OnFocus();
 			}
 			
-			virtual void OnFocusLost() {
+			void LoseFocus() {
 				_focus = FALSE;
+				OnFocusLost();
+			}
+			
+			virtual void OnStart()
+			{ }
+			
+			virtual void OnStop()
+			{ }
+			
+			void Start() {
+				_state = TRUE;
+				OnStart();
+			}
+			
+			void Stop() {
+				_state = FALSE;
+				OnStop();
 			}
 			
 			virtual void OnUiUpdate()
@@ -97,14 +121,6 @@ namespace EAClock {
 			
 			virtual fsize_t GetTransitionTarget() const {
 				return 0;
-			}
-			
-			virtual void Start() {
-				_state = TRUE;
-			}
-			
-			virtual void Stop() {
-				_state = FALSE;
 			}
 		};
 		

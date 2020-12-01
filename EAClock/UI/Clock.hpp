@@ -195,14 +195,12 @@ namespace EAClock {
 				
 				this->RestoreHandlers();
 				UIEntityTime::SetShowMode(ShowMode::hh_mm);
-				UIEntityTime::OnFocus();
 			}
 			
 			void OnFocusLost() override {
 				
 				lcd8::PointAt(lcd8position::Second, FALSE);
 				this->GiveControlTo(0);
-				UIEntityTime::OnFocusLost();
 			}
 			
 			static Clock* GetInstance(

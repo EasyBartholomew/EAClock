@@ -61,14 +61,14 @@ namespace EAClock {
 			static void GoToUi(const fsize_t& idx) {
 				
 				auto cui = UIManager::GetCurrentUI();
-				cui->OnFocusLost();
+				cui->GetFocus();
 				
 				current_ui = idx;
 				
 				UIManager::BlockButtons();
 				
 				cui = UIManager::GetCurrentUI();
-				cui->OnFocus();
+				cui->LoseFocus();
 			}
 			
 			static void ChangeShowMode() {

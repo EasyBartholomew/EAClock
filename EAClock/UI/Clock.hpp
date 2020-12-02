@@ -122,7 +122,7 @@ namespace EAClock {
 				this->Start();
 			}
 			
-			static void OnSelectLongClick(const Button& sender) {
+			static void OnSelectClick(const Button& sender) {
 				instance.GiveControlTo(Stopwatch::GetInstance()->GetHandle());
 			}
 			
@@ -135,16 +135,21 @@ namespace EAClock {
 			}
 			
 			static void OnDownClick(const Button& sender) {
+				
+			}
+			
+			static void OnDownLongClick(const Button& sender) {
 				instance.Select(SelectionTarget::Time);
 			}
 			
 			void RestoreHandlers() {
 				_up->SetClickHandler(OnUpClick);
-				_down->SetClickHandler(OnDownClick);
-				
 				_up->SetLongClickHandler(OnUpLongClick);
 				
-				_select->SetLongClickHandler(OnSelectLongClick);
+				_down->SetClickHandler(OnDownClick);
+				_down->SetLongClickHandler(OnDownLongClick);
+				
+				_select->SetClickHandler(OnSelectClick);
 			}
 			
 			static void OnAlarmStopRinging(const Button& sender) {
@@ -165,7 +170,7 @@ namespace EAClock {
 						
 						_up->SetLongClickHandler(nullptr);
 						_down->SetLongClickHandler(nullptr);
-						_select->SetLongClickHandler(nullptr);
+						_select->SetClickHandler(nullptr);
 						_up->SetClickHandler(Clock::OnAlarmStopRinging);
 						_down->SetClickHandler(Clock::OnAlarmStopRinging);
 						

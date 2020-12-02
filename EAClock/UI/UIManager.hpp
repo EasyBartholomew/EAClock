@@ -91,11 +91,11 @@ namespace EAClock {
 				tui->OnShowModeChanged(currentMode);
 			}
 			
-			static void OnSelectClick(const Button& sender){
+			static void OnSelectLongClick(const Button& sender){
 				UIManager::ChangeShowMode();
 			}
 			
-			static void OnSelectLongClick(const Button& sender) {
+			static void OnSelectClick(const Button& sender) {
 				
 				auto cui = UIManager::GetCurrentUI();
 				GoToUi(cui->GetTransitionTarget());
@@ -126,7 +126,7 @@ namespace EAClock {
 				
 				if(cui->IsTransitionTarget()) {
 					
-					select->SetLongClickHandler(OnSelectLongClick);
+					select->SetClickHandler(OnSelectClick);
 					UIManager::GoToUi(cui->GetTransitionTarget());
 					return;
 				}

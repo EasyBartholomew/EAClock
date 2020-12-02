@@ -3,7 +3,7 @@
 #include "../BaseAVR/globaldef.h"
 #include "UIEntityTime.hpp"
 
-#define DEFAULT_BLINK_INTEVAL 500
+#define DEFAULT_BLINK_INTEVAL 750
 #define DEFAULT_CLICK_CHANGE 1
 #define DEFAUL_LONGCLICK_CHANGE 10
 
@@ -25,6 +25,7 @@ namespace EAClock {
 			
 			SelectionPair _pair;
 			l_t _showState;
+			
 			TimeSpan _blinkInterval;
 			TimeSpan _timeToUpdate;
 			
@@ -57,6 +58,9 @@ namespace EAClock {
 			}
 			
 			void ChangeOnValue(const s8_t& sign, const tu_t& val) {
+				
+				_showState = TRUE;
+				_timeToUpdate = TimeSpan::Zero;
 				
 				switch (this->GetShowMode()) {
 					case ShowMode::hh_mm: {
@@ -103,7 +107,6 @@ namespace EAClock {
 				
 				if(days > 0)
 				_timeValue.SubtractDays(days);
-				
 			}
 			
 			void ChangeByButtonClick(const Button& sender, const tu_t& val) {
@@ -206,6 +209,7 @@ namespace EAClock {
 				
 				if(_timeToUpdate >= _blinkInterval) {
 					_timeToUpdate = TimeSpan::Zero;
+					
 					_showState = !_showState;
 				}
 			}

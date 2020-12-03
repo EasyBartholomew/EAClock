@@ -27,6 +27,7 @@ int main() {
 	EAClock::UI::UIManager::Start();
 	
 	while(1){
+		Timer::CallSubroutines();
 		Button::CallSubroutines();
 	}
 }

@@ -1,17 +1,17 @@
-#ifndef __LM25_H__
-#define __LM25_H__
+#ifndef __LM35_H__
+#define __LM35_H__
 #include "../../../globaldef.h"
 
 namespace BaseAVR {
 	namespace IO {
 		namespace Sensors {
-			class LM25 {
+			class LM35 {
 				
 				private:
 				static l_t is_inited;
 				
-				LM25();
-				LM25(const LM25&);
+				LM35();
+				LM35(const LM35&);
 				
 				static u16_t _dataconvert(const u16_t& code);
 				
@@ -24,4 +24,4 @@ namespace BaseAVR {
 	}
 }
 
-#endif //__LM25_H__
+#endif //__LM35_H__

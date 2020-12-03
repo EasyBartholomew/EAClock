@@ -22,13 +22,6 @@ namespace BaseAVR {
 		
 		class Button {
 			
-			public:
-			
-			enum class CallPriority : u8_t {
-				Normal,
-				High
-			};
-			
 			private:
 			
 			BaseAVR::HAL::VLine _vLine;
@@ -38,7 +31,7 @@ namespace BaseAVR {
 			u8_t _currentState;
 			l_t _eventActed;
 			
-			CallPriority _priority;
+			BaseAVR::Time::CallPriority _priority;
 			
 			l_t IsPushed();
 			
@@ -64,8 +57,8 @@ namespace BaseAVR {
 			BaseAVR::HAL::VLine GetRef() const;
 			l_t IsRefered() const;
 			
-			CallPriority GetHandlerPriority();
-			void SetHandlerPriority(const CallPriority&);
+			BaseAVR::Time::CallPriority GetHandlerPriority();
+			void SetHandlerPriority(const BaseAVR::Time::CallPriority&);
 			
 			//Static
 			public:

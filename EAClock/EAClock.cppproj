@@ -148,6 +148,7 @@
       <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.3.300\include</Value>
     </ListValues>
   </avrgcccpp.compiler.directories.IncludePaths>
+  <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
   <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
   <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
   <avrgcccpp.compiler.optimization.DebugLevel>Default (-g2)</avrgcccpp.compiler.optimization.DebugLevel>
@@ -222,13 +223,13 @@
     <Compile Include="BaseAVR\IO\lcd8config.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="BaseAVR\IO\Sensors\LM25\LM25.cpp">
+    <Compile Include="BaseAVR\IO\Sensors\LM35\LM35.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="BaseAVR\IO\Sensors\LM25\LM25.h">
+    <Compile Include="BaseAVR\IO\Sensors\LM35\LM35.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="BaseAVR\IO\Sensors\LM25\lm25config.h">
+    <Compile Include="BaseAVR\IO\Sensors\LM35\lm35config.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="BaseAVR\localdef.h">
@@ -279,6 +280,9 @@
     <Compile Include="UI\Stopwatch.hpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="UI\TemperatureSensor.hpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="UI\TimeSelector.hpp">
       <SubType>compile</SubType>
     </Compile>
@@ -298,7 +302,7 @@
     <Folder Include="BaseAVR\IO\" />
     <Folder Include="BaseAVR\Audio" />
     <Folder Include="BaseAVR\IO\Sensors" />
-    <Folder Include="BaseAVR\IO\Sensors\LM25" />
+    <Folder Include="BaseAVR\IO\Sensors\LM35" />
     <Folder Include="BaseAVR\Time\" />
     <Folder Include="BaseAVR\Time\HAL\" />
     <Folder Include="BaseAVR" />

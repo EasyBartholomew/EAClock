@@ -1,5 +1,5 @@
-#include "LM25.h"
-#include "lm25config.h"
+#include "LM35.h"
+#include "lm35config.h"
 #include "../../../Time/await.h"
 #include <math.h>
 
@@ -9,11 +9,11 @@ namespace BaseAVR {
 	namespace IO {
 		namespace Sensors {
 			
-			l_t LM25::is_inited = FALSE;
+			l_t LM35::is_inited = FALSE;
 			
-			void LM25::Init() {
+			void LM35::Init() {
 				
-				if(LM25::is_inited)
+				if(LM35::is_inited)
 				return;
 				
 				_CL(ADCSRA);
@@ -25,7 +25,7 @@ namespace BaseAVR {
 				_SETH(ADCSRA, ADPS2);
 				
 				//Setting line to input
-				_SETL(LM25_DDR, LM25_LINE);
+				_SETL(LM35_DDR, LM35_LINE);
 				
 				//Clear the data registers
 				_CL(ADCH);
@@ -39,12 +39,12 @@ namespace BaseAVR {
 				_SETL(ADMUX, ADLAR);
 				
 				//Setting line to check
-				ADMUX |= 0x0f & LM25_LINE;
+				ADMUX |= 0x0f & LM35_LINE;
 				
 				is_inited = TRUE;
 			}
 			
-			u16_t LM25::MeasureAndGetCValue() {
+			u16_t LM35::MeasureAndGetCValue() {
 				
 				//Starting convert
 				_SETH(ADCSRA, ADSC);
@@ -55,11 +55,11 @@ namespace BaseAVR {
 				u16_t adcCode = ADCL;
 				adcCode |= (ADCH << 8);
 				
-				return LM25::_dataconvert(adcCode);
+				return LM35::_dataconvert(adcCode);
 			}
 			
-			u16_t LM25::_dataconvert(const u16_t& code) {
-				constexpr auto mul = 150.0/307.0 * 10.0;
+			u16_t LM35::_dataconvert(const u16_t& code) {
+				constexpr auto mul = 150.0/306.9 * 10.0;
 				return (u16_t)(round(mul*code));
 			}
 		}

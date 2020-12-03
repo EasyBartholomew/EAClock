@@ -39,6 +39,7 @@ namespace BaseAVR {
 			updater->SetInterval(TimeSpan(LCD8_UPDATE_INTERVAL));
 			updater->SetAutoReset(1);
 			updater->SubscribeHandler(lcd8::Flush);
+			updater->SetHandlerPriority(CallPriority::High);
 			updater->Start();
 			
 			lcd8::isInited = TRUE;

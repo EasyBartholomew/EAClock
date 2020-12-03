@@ -3,6 +3,14 @@
 
 namespace BaseAVR {
 	namespace Time {
+		
+		CallPriority Timer::GetHandlerPriority() const {
+			return _priority;
+		}
+		
+		void Timer::SetHandlerPriority(const CallPriority& priority) {
+			_priority = priority;
+		}
 
 		l_t Timer::IsStarted() const {
 			return _next != 0;
@@ -67,6 +75,8 @@ namespace BaseAVR {
 			this->SetAutoReset(0);
 			_callback = nullptr;
 			_next = 0;
+			_elapsed = FALSE;
+			_priority = CallPriority::Normal;
 		}
 
 		Timer::Timer(const tu_t& msInterval) : Timer(TimeSpan(msInterval))
@@ -77,6 +87,8 @@ namespace BaseAVR {
 			this->_autoReset = other._autoReset;
 			this->_interval = other._interval;
 			this->_callback = other._callback;
+			this->_priority = other._priority;
+			this->_elapsed = other._elapsed;
 		}
 
 		void Timer::hTimerCallback(const tu_t& current) {
@@ -87,7 +99,13 @@ namespace BaseAVR {
 				if (currentInst->IsStarted() && currentInst->_callback != nullptr) {
 					
 					if (currentInst->_next <= current) {
-						currentInst->_callback();
+						
+						if(currentInst->_priority == CallPriority::High) {
+							currentInst->_callback();
+						}
+						else if(currentInst->_priority == CallPriority::Normal) {
+							currentInst->_elapsed = TRUE;
+						}
 						
 						if (currentInst->_autoReset)
 						currentInst->_next += currentInst->_interval;
@@ -104,11 +122,12 @@ namespace BaseAVR {
 				HAL::avrhwtimer0::SetHandler(Timer::hTimerCallback);
 				HAL::avrhwtimer0::HandlerResort();
 				HAL::avrhwtimer0::Init();
-				isInited = TRUE;
 				
 				for(register fsize_t i = 0; i < TIMER_INST_MAX; i++){
 					Timer::instances[i] = Timer();
 				}
+				
+				isInited = TRUE;
 			}
 		}
 
@@ -144,6 +163,20 @@ namespace BaseAVR {
 			}
 			
 			return nullptr;
+		}
+		
+		void Timer::CallSubroutines() {
+			
+			for(register fsize_t i = 0; i < TIMER_INST_MAX; i++) {
+				auto current = Timer::GetInstance(i);
+				
+				if(current->_priority == CallPriority::Normal) {
+					if(current->_elapsed) {
+						current->_callback();
+						current->_elapsed = FALSE;
+					}
+				}
+			}
 		}
 		
 		fsize_t Timer::current_instance = 0;

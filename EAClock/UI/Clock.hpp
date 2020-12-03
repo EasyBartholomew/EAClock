@@ -5,6 +5,7 @@
 
 #include "Stopwatch.hpp"
 #include "TimeSelector.hpp"
+#include "TemperatureSensor.hpp"
 
 using namespace BaseAVR::Audio::HAL;
 
@@ -48,6 +49,7 @@ namespace EAClock {
 				_selectionTarget = SelectionTarget::None;
 				_select = select;
 				
+				avrhwaudio::Init();
 			}
 			
 			void GiveControlTo(const fsize_t& target) {
@@ -135,7 +137,7 @@ namespace EAClock {
 			}
 			
 			static void OnDownClick(const Button& sender) {
-				
+				instance.GiveControlTo(TemperatureSensor::GetInstance()->GetHandle());
 			}
 			
 			static void OnDownLongClick(const Button& sender) {

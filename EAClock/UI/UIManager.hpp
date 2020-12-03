@@ -27,6 +27,7 @@ using namespace BaseAVR::Time;
 #define UI_STOPWATCH 1
 #define UI_SELECTOR 2
 #define UI_TIMER 3
+#define UI_SENSOR 4
 
 namespace EAClock {
 	namespace UI {
@@ -35,7 +36,7 @@ namespace EAClock {
 			
 			private:
 			
-			static const fsize_t UIS_MAX = 4;
+			static const fsize_t UIS_MAX = 6;
 			
 			static pbutton_t select;
 			static pbutton_t up;
@@ -103,7 +104,7 @@ namespace EAClock {
 			
 			static void OnUpdate() {
 				for(register fsize_t i = 0; i < UIS_MAX; i++) {
-					pui_entity cui = uis[i];
+					auto cui = uis[i];
 					
 					if(cui == nullptr)
 					continue;
@@ -147,9 +148,10 @@ namespace EAClock {
 					uis[i] = nullptr;
 				}
 				
-				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TimeSpan(0,12,20,0,0), TRUE, select, up, down);
+				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TimeSpan(0,12,16,0,0), TRUE, select, up, down);
 				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan::Zero, up);
 				uis[UI_SELECTOR] = TimeSelector::InitAndGetInstance(up, down);
+				uis[UI_SENSOR] = TemperatureSensor::InitAndGetInstance(FALSE, down, TemperatureUnits::Celsius);
 				
 				for(register fsize_t i = 0; i < UIS_MAX; i++) {
 					if(uis[i] != nullptr)
@@ -157,17 +159,19 @@ namespace EAClock {
 				}
 				
 				
-				select->SetHandlerPriority(Button::CallPriority::High);
+				select->SetHandlerPriority(CallPriority::High);
 				select->SetClickHandler(OnSelectClick);
 				select->SetLongClickHandler(OnSelectLongClick);
 				
 				updater = Timer::GetNextInstance(ENTITY_UPDATE_INTERVAL);
 				updater->SetAutoReset(TRUE);
 				updater->SubscribeHandler(OnUpdate);
+				updater->SetHandlerPriority(CallPriority::High);
 				
 				uiUpdater = Timer::GetNextInstance(UI_UPDATE_INTERVAL);
 				uiUpdater->SetAutoReset(TRUE);
 				uiUpdater->SubscribeHandler(OnUiUpdate);
+				uiUpdater->SetHandlerPriority(CallPriority::Normal);
 			}
 			
 			static void Start() {

@@ -10,13 +10,20 @@ namespace BaseAVR {
 	namespace Time {
 
 		typedef void (*_Timer_Handler_Callback)();
-
+		
+		enum class CallPriority : u8_t {
+			Normal,
+			High
+		};
+		
 		class Timer {
 			private:
 			tu_t _interval;
 			l_t _autoReset;
 			tu_t _next;
-
+			l_t _elapsed;
+			CallPriority _priority;
+			
 			_Timer_Handler_Callback _callback;
 
 			Timer(const Timer&);
@@ -30,7 +37,10 @@ namespace BaseAVR {
 			static void hTimerCallback(const tu_t&);
 
 			public:
-
+			
+			CallPriority GetHandlerPriority() const;
+			void SetHandlerPriority(const CallPriority&);
+			
 			TimeSpan GetInterval() const;
 			tu_t GetMsInterval() const;
 			l_t GetAutoReset() const;
@@ -48,6 +58,8 @@ namespace BaseAVR {
 			static Timer* const GetNextInstance(const TimeSpan&);
 			static Timer* const GetNextInstance(const tu_t&);
 			static Timer* const GetFreeInstance();
+			
+			static void CallSubroutines();
 			
 			void Start();
 			void Stop();

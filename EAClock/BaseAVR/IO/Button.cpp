@@ -84,7 +84,7 @@ namespace BaseAVR {
 				
 				currentInst->_currentState = currentState;
 				
-				if(currentInst->GetHandlerPriority() == Button::CallPriority::High) {
+				if(currentInst->GetHandlerPriority() == CallPriority::High) {
 					RaiseEvent(*currentInst);
 				}
 			}
@@ -114,11 +114,11 @@ namespace BaseAVR {
 			}
 		}
 		
-		Button::CallPriority Button::GetHandlerPriority() {
+		CallPriority Button::GetHandlerPriority() {
 			return _priority;
 		}
 		
-		void Button::SetHandlerPriority(const Button::CallPriority& priority) {
+		void Button::SetHandlerPriority(const CallPriority& priority) {
 			_priority = priority;
 		}
 		
@@ -128,7 +128,7 @@ namespace BaseAVR {
 				
 				auto current = Button::GetInstance(i);
 				
-				if(current->GetHandlerPriority() == Button::CallPriority::Normal) {
+				if(current->GetHandlerPriority() == CallPriority::Normal) {
 					Button::RaiseEvent(*current);
 				}
 			}
@@ -148,6 +148,7 @@ namespace BaseAVR {
 			initiator->SetInterval(BUTTON_CHECK_DELAY);
 			initiator->SetAutoReset(TRUE);
 			initiator->SubscribeHandler(Refresh);
+			initiator->SetHandlerPriority(CallPriority::High);
 			initiator->Start();
 			
 			is_inited = TRUE;

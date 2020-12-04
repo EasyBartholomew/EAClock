@@ -8,7 +8,7 @@ namespace BaseAVR{
 	namespace Audio{
 		namespace HAL{
 			
-			typedef u32_t freq_t;
+			typedef d32_t freq_t;
 			
 			class avrhwaudio{
 				private:

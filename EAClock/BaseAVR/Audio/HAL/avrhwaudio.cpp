@@ -29,8 +29,10 @@ namespace BaseAVR{
 				}
 			}
 			
-			void avrhwaudio::SetFrequence(const freq_t& f){
+			void avrhwaudio::SetFrequence(const freq_t& f) {
+				avrhwtimer2::HandlerBlock();
 				avrhwaudio::interval = (tu_t)round(1000000.0 / f);
+				avrhwtimer2::HandlerResort();
 			}
 			
 			void avrhwaudio::Start(const freq_t& f){

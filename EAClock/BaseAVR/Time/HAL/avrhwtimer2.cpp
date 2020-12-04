@@ -62,7 +62,7 @@ namespace BaseAVR {
 					
 					avrhwtimer2::Block();
 					
-					//Setting compare value to 0x40 (1 us)
+					//Setting compare value to 0x1 (1 us)
 					_CL(TCNT2);
 					_SETVAL(OCR2, 0x1);
 					

@@ -148,7 +148,7 @@ namespace EAClock {
 					uis[i] = nullptr;
 				}
 				
-				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,15,16,0), TimeSpan(0,12,16,0,0), TRUE, select, up, down);
+				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,0,0,0), TimeSpan(0,12,0,0,0), TRUE, select, up, down);
 				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan::Zero, up);
 				uis[UI_SELECTOR] = TimeSelector::InitAndGetInstance(up, down);
 				uis[UI_SENSOR] = TemperatureSensor::InitAndGetInstance(FALSE, down, TemperatureUnits::Celsius);

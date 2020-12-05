@@ -4,7 +4,7 @@
 #include "../../macrodef.h"
 
 #define TARGET_PORT MKPORT(D)
-#define TARGET_PIN D3
+#define TARGET_PIN D4
 #define TARGET_DDR MKDDR(D)
 
 #define SET_TH _SETH(TARGET_PORT, TARGET_PIN);

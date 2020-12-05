@@ -64,7 +64,7 @@ namespace BaseAVR {
 					
 					//Setting compare value to 0x1 (1 us)
 					_CL(TCNT2);
-					_SETVAL(OCR2, 0x1);
+					_SETVAL(OCR2, 250);
 					
 					//Setting clock to F_CPU/8 and mode to CTC
 					_CL(TCCR2);

@@ -28,7 +28,6 @@ namespace EAClock {
 			
 			l_t _alarmOn;
 			TimeSpan _alarmTime;
-			fsize_t _transition;
 			SelectionTarget _selectionTarget;
 			
 			pbutton_t _select;
@@ -45,15 +44,10 @@ namespace EAClock {
 				this->SetTimeValue(initTime);
 				_alarmTime = alarmTime;
 				_alarmOn = FALSE;
-				_transition = 0;
 				_selectionTarget = SelectionTarget::None;
 				_select = select;
 				
 				avrhwaudio::Init();
-			}
-			
-			void GiveControlTo(const fsize_t& target) {
-				_transition = target;
 			}
 			
 			void TurnAlarm(const l_t& status) {
@@ -61,7 +55,7 @@ namespace EAClock {
 			}
 			
 			void BlinkCentralPoint() {
-				lcd8::PointAt(lcd8position::Second, _alarmOn ? TRUE : _timeValue.GetSeconds() & 1);
+				lcd8::PointAt(lcd8position::Second, _alarmOn ? TRUE : this->GetTimeValue().GetSeconds() & 1);
 			}
 			
 			l_t IsSelectionPreformed() {
@@ -97,7 +91,7 @@ namespace EAClock {
 				ShowMode::hh_mm,
 				instance.GetHandle());
 				
-				instance.GiveControlTo(selector->GetHandle());
+				instance.TransitTo(selector->GetHandle());
 				instance._selectionTarget = target;
 				this->Stop();
 			}
@@ -125,7 +119,7 @@ namespace EAClock {
 			}
 			
 			static void OnSelectClick(const Button& sender) {
-				instance.GiveControlTo(Stopwatch::GetInstance()->GetHandle());
+				instance.TransitTo(Stopwatch::GetInstance()->GetHandle());
 			}
 			
 			static void OnUpClick(const Button& sender) {
@@ -137,7 +131,7 @@ namespace EAClock {
 			}
 			
 			static void OnDownClick(const Button& sender) {
-				instance.GiveControlTo(TemperatureSensor::GetInstance()->GetHandle());
+				instance.TransitTo(TemperatureSensor::GetInstance()->GetHandle());
 			}
 			
 			static void OnDownLongClick(const Button& sender) {
@@ -183,10 +177,11 @@ namespace EAClock {
 				
 				UIEntityTime::OnUpdate(delta);
 				
-				auto days = _timeValue.GetDays();
+				auto timeVal =  this->GetTimeValue();
+				auto days = timeVal.GetDays();
 				
 				if(days > 0) {
-					_timeValue.SubtractDays(days);
+					this->SetTimeValue(timeVal.SubtractDays(days));
 				}
 			}
 			
@@ -205,9 +200,7 @@ namespace EAClock {
 			}
 			
 			void OnFocusLost() override {
-				
 				lcd8::PointAt(lcd8position::Second, FALSE);
-				this->GiveControlTo(0);
 			}
 			
 			static Clock* GetInstance(
@@ -229,15 +222,6 @@ namespace EAClock {
 			l_t IsMainUIEntity() const override {
 				return TRUE;
 			}
-			
-			l_t IsTransitionTarget() const override {
-				return _transition != 0;
-			}
-			
-			fsize_t GetTransitionTarget() const override {
-				return _transition;
-			}
-			
 		};
 		
 		Clock Clock::instance(TimeSpan(0), TimeSpan(0), FALSE, nullptr, nullptr, nullptr);

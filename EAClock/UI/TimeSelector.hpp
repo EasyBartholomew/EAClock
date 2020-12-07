@@ -61,17 +61,18 @@ namespace EAClock {
 				
 				_showState = TRUE;
 				_timeToUpdate = TimeSpan::Zero;
+				auto timeValue = this->GetTimeValue();
 				
 				switch (this->GetShowMode()) {
 					case ShowMode::hh_mm: {
 						switch (_pair) {
 							
 							case SelectionPair::Low: {
-								_timeValue.AddMinutes(sign * val);
+								timeValue.AddMinutes(sign * val);
 							}break;
 							
 							case SelectionPair::High: {
-								_timeValue.AddHours(sign * val);
+								timeValue.AddHours(sign * val);
 							}break;
 							
 							default:
@@ -83,11 +84,11 @@ namespace EAClock {
 						switch (_pair) {
 							
 							case SelectionPair::Low: {
-								_timeValue.AddSeconds(sign * val);
+								timeValue.AddSeconds(sign * val);
 							}break;
 							
 							case SelectionPair::High: {
-								_timeValue.AddMinutes(sign * val);
+								timeValue.AddMinutes(sign * val);
 							}break;
 							
 							default:
@@ -100,13 +101,15 @@ namespace EAClock {
 					break;
 				}
 				
-				auto days = _timeValue.GetDays();
+				auto days = timeValue.GetDays();
 				
-				if(_timeValue.GetTotalMilliseconds() < 0)
-				_timeValue.AddDays(1);
+				if(timeValue.GetTotalMilliseconds() < 0)
+				timeValue.AddDays(1);
 				
 				if(days > 0)
-				_timeValue.SubtractDays(days);
+				timeValue.SubtractDays(days);
+				
+				this->SetTimeValue(timeValue);
 			}
 			
 			void ChangeByButtonClick(const Button& sender, const tu_t& val) {

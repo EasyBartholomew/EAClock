@@ -17,6 +17,7 @@ namespace EAClock {
 			private:
 			
 			fsize_t _handle;
+			fsize_t _transitionTarget;
 			
 			public:
 			
@@ -119,12 +120,16 @@ namespace EAClock {
 				return FALSE;
 			}
 			
+			virtual void TransitTo(const fsize_t& handle) {
+				_transitionTarget = handle;
+			}
+			
 			virtual l_t IsTransitionTarget() const {
-				return 0;
+				return _transitionTarget != 0;
 			}
 			
 			virtual fsize_t GetTransitionTarget() const {
-				return 0;
+				return _transitionTarget;
 			}
 		};
 		

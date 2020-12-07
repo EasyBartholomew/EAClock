@@ -16,10 +16,14 @@ namespace EAClock {
 		
 		class UIEntityTime : public UIEntity {
 			
+			private:
+			
+			ShowMode _mode;
+			TimeSpan _timeValue;
+			
 			protected:
 			
-			TimeSpan _timeValue;
-			ShowMode _mode;
+			
 			
 			UIEntityTime(const l_t& state, pbutton_t up, pbutton_t down) : UIEntity(state, up, down)
 			{ }

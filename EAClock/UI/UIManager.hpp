@@ -129,6 +129,7 @@ namespace EAClock {
 					
 					select->SetClickHandler(OnSelectClick);
 					UIManager::GoToUi(cui->GetTransitionTarget());
+					cui->TransitTo(0);
 					return;
 				}
 				

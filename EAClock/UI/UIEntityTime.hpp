@@ -61,7 +61,7 @@ namespace EAClock {
 						_buffer[0] = _timeValue.GetSeconds() / 10;
 						_buffer[1] = _timeValue.GetSeconds() % 10;
 						_buffer[2] = _timeValue.GetMilliseconds() / 100;
-						_buffer[3] = _timeValue.GetMilliseconds() / 10;
+						_buffer[3] = (_timeValue.GetMilliseconds() / 10) % 10;
 					}break;
 					
 				}

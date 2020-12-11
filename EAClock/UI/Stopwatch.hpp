@@ -1,7 +1,7 @@
 #ifndef __STOPWATCH_H__
 #define __STOPWATCH_H__
 #include "UIEntityTime.hpp"
-
+#include "Timer.hpp"
 
 namespace EAClock {
 	namespace UI {
@@ -33,7 +33,15 @@ namespace EAClock {
 				}
 			}
 			
-			Stopwatch(const TimeSpan& startVal, pbutton_t up) : UIEntityTime(FALSE, up, nullptr) {
+			static void OnDownLongClick(const Button& sender) {
+				
+				auto timer = Timer::GetInstace();
+				
+				timer->SetReturnTarget(instance.GetHandle());
+				instance.TransitTo(timer->GetHandle());
+			}
+			
+			Stopwatch(const TimeSpan& startVal, pbutton_t up, pbutton_t down) : UIEntityTime(FALSE, up, down) {
 				UIEntityTime::SetTimeValue(startVal);
 				firstStart = TRUE;
 			}
@@ -48,6 +56,7 @@ namespace EAClock {
 				
 				_up->SetClickHandler(Stopwatch::OnUpClick);
 				_up->SetLongClickHandler(Stopwatch::OnUpLongClick);
+				_down->SetClickHandler(Stopwatch::OnDownLongClick);
 				
 				if(firstStart) {
 					this->OnFirstStart();
@@ -61,8 +70,8 @@ namespace EAClock {
 				lcd8::PointAt(lcd8position::Fourth, this->IsStarted());
 			}
 			
-			static Stopwatch* GetInstance(const TimeSpan& startVal, pbutton_t up) {
-				instance = Stopwatch(startVal, up);
+			static Stopwatch* InitAndGetInstance(const TimeSpan& startVal, pbutton_t up, pbutton_t down) {
+				instance = Stopwatch(startVal, up, down);
 				
 				return &instance;
 			}
@@ -72,7 +81,7 @@ namespace EAClock {
 			}
 		};
 		
-		Stopwatch Stopwatch::instance(TimeSpan(0), nullptr);
+		Stopwatch Stopwatch::instance(TimeSpan(0), nullptr, nullptr);
 	}
 }
 

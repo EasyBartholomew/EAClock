@@ -1,8 +1,7 @@
 #ifndef __TIMER_HPP__
 #define __TIMER_HPP__
 #include "UIEntityTime.hpp"
-#include "Stopwatch.hpp"
-#include "TemperatureSensor.hpp"
+#include "TimeSelector.hpp"
 
 #include "../BaseAVR/Audio/HAL/avrhwaudio.h"
 
@@ -20,18 +19,21 @@ namespace EAClock {
 			
 			static Timer instance;
 			TimeSpan _userTimeLeft;
+			l_t _isSelectionPerformed;
 			
 			_ButtonEventCallBack _upClickHandlerBackup;
 			_ButtonEventCallBack _downClickHandlerBackup;
 			_ButtonEventCallBack _upLongClickHandlerBackup;
 			_ButtonEventCallBack _downLongClickHandlerBackup;
 			
+			
 			Timer(
 			const l_t& state,
 			const TimeSpan& pivotValue,
 			pbutton_t up,
-			pbutton_t down) : UIEntityTime(state, down, down) {
+			pbutton_t down) : UIEntityTime(state, up, down) {
 				_userTimeLeft = pivotValue;
+				_isSelectionPerformed = FALSE;
 				this->BackupLastButtons();
 			}
 			
@@ -56,7 +58,7 @@ namespace EAClock {
 			}
 			
 			static void OnUpClick(const Button& sender) {
-				instance.TransitTo(Stopwatch::GetInstance()->GetHandle());
+				instance.TransitTo(instance.GetReturnTarget());
 			}
 			
 			static void OnDownClick(const Button& sender) {
@@ -70,18 +72,23 @@ namespace EAClock {
 			}
 			
 			static void OnDownLongClick(const Button& sender) {
-				
+				instance.Stop();
+				TimeSelector::GetInstance()->
+				Select(instance._userTimeLeft, SelectionPair::Low, ShowMode::hh_mm, instance.GetHandle());
+				instance._isSelectionPerformed = TRUE;
+				instance.TransitTo(TimeSelector::GetInstance()->GetHandle());
 			}
 			
 			static void OnUpLongClick(const Button& sender) {
-				
+				instance.Reset();
 			}
 			
 			void Ring() {
 				
-				instance.BackupLastButtons();
-				
 				if(!avrhwaudio::IsStarted()) {
+					instance.BackupLastButtons();
+					UIEntityTime::_up->SetClickHandler(OnStopRinging);
+					UIEntityTime::_down->SetClickHandler(OnStopRinging);
 					avrhwaudio::Start(TIMER_RINGER_FREQ);
 				}
 			}
@@ -90,9 +97,21 @@ namespace EAClock {
 				
 				if(avrhwaudio::IsStarted()) {
 					instance.RestoreLastButtons();
+					avrhwaudio::Stop();
 				}
 				
-				avrhwaudio::Stop();
+				UIEntityTime::SetTimeValue(_userTimeLeft);
+			}
+			
+			static void OnStopRinging(const Button& sender) {
+				instance.StopRinging();
+			}
+			
+			void OnSelectionEnd() {
+				
+				_userTimeLeft = TimeSelector::GetInstance()->GetTimeValue();
+				UIEntityTime::SetTimeValue(_userTimeLeft);
+				_isSelectionPerformed = FALSE;
 			}
 			
 			public:
@@ -101,7 +120,7 @@ namespace EAClock {
 				
 				auto remain = UIEntityTime::GetTimeValue() - delta;
 				
-				if(remain == TimeSpan::Zero) {
+				if(remain <= TimeSpan::Zero) {
 					this->Stop();
 					this->Ring();
 				}
@@ -111,12 +130,41 @@ namespace EAClock {
 				}
 			}
 			
+			void OnUiUpdate() override {
+				
+				auto span = this->GetTimeValue();
+				
+				this->SetShowMode(ShowMode::hh_mm);
+				
+				if(span.GetHours() == 0) {
+					this->SetShowMode(ShowMode::mm_ss);
+				}
+				
+				if(span.GetMinutes() == 0) {
+					this->SetShowMode(ShowMode::ss_th);
+				}
+			}
+			
 			void OnFocus() override {
 				
+				if(!this->IsStarted()) {
+					instance.SetTimeValue(instance._userTimeLeft);
+				}
+				
+				if(_isSelectionPerformed) {
+					this->OnSelectionEnd();
+				}
+				
+				lcd8::PointAt(lcd8position::Second, TRUE);
+				UIEntityTime::_down->SetClickHandler(OnDownClick);
+				UIEntityTime::_down->SetLongClickHandler(OnDownLongClick);
+				UIEntityTime::_up->SetClickHandler(OnUpClick);
+				UIEntityTime::_up->SetLongClickHandler(OnUpLongClick);
 			}
 			
 			void OnFocusLost() override {
 				
+				lcd8::PointAt(lcd8position::Second, FALSE);
 			}
 			
 			
@@ -124,13 +172,17 @@ namespace EAClock {
 				return &instance;
 			}
 			
-			static Timer* InitAndGetInstace(const l_t& state, const TimeSpan& pivotValue, pbutton_t down) {
-				instance = Timer(state, pivotValue, down);
+			static Timer* InitAndGetInstace(
+			const l_t& state,
+			const TimeSpan& pivotValue,
+			pbutton_t up,
+			pbutton_t down) {
+				instance = Timer(state, pivotValue, up, down);
 				return Timer::GetInstace();
 			}
 		};
 		
-		Timer Timer::instance(FALSE, TimeSpan::Zero, nullptr);
+		Timer Timer::instance(FALSE, TimeSpan::Zero, nullptr, nullptr);
 		
 	}
 }

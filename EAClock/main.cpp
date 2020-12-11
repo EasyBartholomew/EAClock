@@ -1,33 +1,23 @@
-#include "BaseAVR/globaldef.h"
-#include "BaseAVR/macrodef.h"
-#include "BaseAVR/Time/TimeSpan.h"
-#include "BaseAVR/Time/await.h"
-#include "BaseAVR/IO/lcd8.h"
-#include "BaseAVR/IO/Button.h"
-#include "UI/UIManager.hpp"
+#include "App.hpp"
 
-using namespace BaseAVR;
-using namespace BaseAVR::IO;
+
+using namespace EAClock;
 using namespace BaseAVR::Time;
 
 
 int main() {
 	
-	__CLI
-	lcd8::Init();
-	lcd8::UseZeroAsDefaultDigit(FALSE);
-	Button::Init();
-	__SEI
+	//Init of usable modules
+	App::Init();
 	
-	u8_t defargs[] = "E-CL";
-	lcd8::Write(defargs);
-	Await::ForMs(3000);
+	//Showing splash screen for 3 seconds
+	App::ShowSplashScreenFor(TimeSpan::FromSeconds(1));
 	
-	EAClock::UI::UIManager::Init();
-	EAClock::UI::UIManager::Start();
+	//Starting main program
+	App::Start();
 	
-	while(1){
-		Timer::CallSubroutines();
-		Button::CallSubroutines();
+	
+	while(1) {
+		App::EventLoop();
 	}
 }

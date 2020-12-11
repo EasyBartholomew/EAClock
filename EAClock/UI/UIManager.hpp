@@ -11,17 +11,12 @@
 
 #include "UIEntity.hpp"
 #include "UIEntityTime.hpp"
-#include "Stopwatch.hpp"
-#include "Clock.hpp"
-#include "TimeSelector.hpp"
+
 
 using namespace BaseAVR;
 using namespace BaseAVR::HAL;
 using namespace BaseAVR::IO;
 using namespace BaseAVR::Time;
-
-#define ENTITY_UPDATE_INTERVAL 25
-#define UI_UPDATE_INTERVAL 50
 
 #define UI_MAIN 0
 #define UI_STOPWATCH 1
@@ -37,6 +32,10 @@ namespace EAClock {
 			private:
 			
 			static const fsize_t UIS_MAX = 6;
+			static const handle_t UI_MAIN_HANDLE = 0;
+			
+			static const tu_t TIME_ENTITY_UPDATE_INTERVAL = 25;
+			static const tu_t UI_ENTITY_UPDATE_INTERVAL = 50;
 			
 			static pbutton_t select;
 			static pbutton_t up;
@@ -59,7 +58,7 @@ namespace EAClock {
 				down->SetLongClickHandler(nullptr);
 			}
 			
-			static void GoToUi(const fsize_t& idx) {
+			static void GoToUi(const handle_t& idx) {
 				
 				auto cui = UIManager::GetCurrentUI();
 				cui->LoseFocus();
@@ -103,7 +102,7 @@ namespace EAClock {
 			}
 			
 			static void OnUpdate() {
-				for(register fsize_t i = 0; i < UIS_MAX; i++) {
+				for(register handle_t i = 0; i < UIS_MAX; i++) {
 					auto cui = uis[i];
 					
 					if(cui == nullptr)
@@ -139,44 +138,74 @@ namespace EAClock {
 			
 			public:
 			
-			static void Init() {
+			static void AddUI(pui_entity ui) {
 				
-				select = Button::GetNextInstance(VLine(hwio_base::D, D0, IOMode::Input));
-				up = Button::GetNextInstance(VLine(hwio_base::D, D1, IOMode::Input));
-				down = Button::GetNextInstance(VLine(hwio_base::D, D2, IOMode::Input));
+				//Zero reserved for main ui
+				for(register handle_t h = 1; h < UIManager::UIS_MAX; h++) {
+					
+					if(uis[h] == nullptr) {
+						uis[h] = ui;
+						ui->SetHandle(h);
+						
+						return;
+					}
+				}
+			}
+			
+			static void RemoveUI(const handle_t& handle) {
 				
-				for(register fsize_t i = 0; i < UIS_MAX; i++) {
-					uis[i] = nullptr;
+				if(handle >= UIManager::UIS_MAX) {
+					return;
 				}
 				
-				uis[UI_MAIN] = Clock::GetInstance(TimeSpan(0,12,0,0,0), TimeSpan(0,12,0,0,0), TRUE, select, up, down);
-				uis[UI_STOPWATCH] = Stopwatch::GetInstance(TimeSpan::Zero, up);
-				uis[UI_SELECTOR] = TimeSelector::InitAndGetInstance(up, down);
-				uis[UI_SENSOR] = TemperatureSensor::InitAndGetInstance(FALSE, down, TemperatureUnits::Celsius);
-				
-				for(register fsize_t i = 0; i < UIS_MAX; i++) {
-					if(uis[i] != nullptr)
-					uis[i]->SetHandle(i);
-				}
-				
+				uis[handle] = nullptr;
+			}
+			
+			static void AddMainUI(pui_entity mainUI) {
+				uis[UIManager::UI_MAIN_HANDLE] = mainUI;
+				mainUI->SetHandle(UIManager::UI_MAIN_HANDLE);
+			}
+			
+			//Make private
+			static void SetButton(pbutton_t* target, pbutton_t btn) {
+				*target = btn;
+			}
+			
+			static void SetSelectButton(pbutton_t btn) {
+				UIManager::SetButton(&select, btn);
 				
 				select->SetHandlerPriority(CallPriority::High);
 				select->SetClickHandler(OnSelectClick);
 				select->SetLongClickHandler(OnSelectLongClick);
+			}
+			
+			static void SetUpButton(pbutton_t btn) {
+				UIManager::SetButton(&up, btn);
+			}
+			
+			static void SetDownButton(pbutton_t btn) {
+				UIManager::SetButton(&down, btn);
+			}
+			
+			static void Init() {
 				
-				updater = Timer::GetNextInstance(ENTITY_UPDATE_INTERVAL);
+				for(register handle_t i = 0; i < UIS_MAX; i++) {
+					uis[i] = nullptr;
+				}
+				
+				updater = Timer::GetNextInstance((tu_t)UIManager::TIME_ENTITY_UPDATE_INTERVAL);
 				updater->SetAutoReset(TRUE);
 				updater->SubscribeHandler(OnUpdate);
 				updater->SetHandlerPriority(CallPriority::High);
 				
-				uiUpdater = Timer::GetNextInstance(UI_UPDATE_INTERVAL);
+				uiUpdater = Timer::GetNextInstance((tu_t)UIManager::UI_ENTITY_UPDATE_INTERVAL);
 				uiUpdater->SetAutoReset(TRUE);
 				uiUpdater->SubscribeHandler(OnUiUpdate);
 				uiUpdater->SetHandlerPriority(CallPriority::Normal);
 			}
 			
 			static void Start() {
-				GoToUi(UI_MAIN);
+				GoToUi((handle_t)UIManager::UI_MAIN_HANDLE);
 				updater->Start();
 				uiUpdater->Start();
 			}

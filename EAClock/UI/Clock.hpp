@@ -1,7 +1,6 @@
 #ifndef __CLOCK_HPP__
 #define __CLOCK_HPP__
 #include "UIEntityTime.hpp"
-#include "../BaseAVR/Audio/HAL/avrhwaudio.h"
 
 #include "Stopwatch.hpp"
 #include "TimeSelector.hpp"
@@ -46,8 +45,6 @@ namespace EAClock {
 				_alarmOn = FALSE;
 				_selectionTarget = SelectionTarget::None;
 				_select = select;
-				
-				avrhwaudio::Init();
 			}
 			
 			void TurnAlarm(const l_t& status) {
@@ -203,13 +200,13 @@ namespace EAClock {
 				lcd8::PointAt(lcd8position::Second, FALSE);
 			}
 			
-			static Clock* GetInstance(
+			static Clock* InitAndGetInstance(
 			const TimeSpan& initTime,
 			const TimeSpan& alarmTime,
 			const l_t& state,
 			pbutton_t select,
-			Button* up,
-			Button* down) {
+			pbutton_t up,
+			pbutton_t down) {
 				
 				instance = Clock(initTime, alarmTime, state, select, up, down);
 				return &instance;

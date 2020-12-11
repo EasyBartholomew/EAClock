@@ -11,13 +11,15 @@ namespace EAClock {
 	namespace UI {
 		
 		typedef Button* pbutton_t;
+		typedef fsize_t handle_t;
 		
 		class UIEntity	{
 			
 			private:
 			
-			fsize_t _handle;
-			fsize_t _transitionTarget;
+			handle_t _handle;
+			handle_t _transitionTarget;
+			handle_t _returnTarget;
 			
 			public:
 			
@@ -38,6 +40,7 @@ namespace EAClock {
 				_up = up;
 				_down = down;
 				_handle = INVALID_HANDLE;
+				_returnTarget = 0;
 				_focus = FALSE;
 			}
 			
@@ -53,11 +56,11 @@ namespace EAClock {
 			
 			public:
 			
-			fsize_t GetHandle() {
+			handle_t GetHandle() {
 				return _handle;
 			}
 			
-			void SetHandle(const fsize_t& handle) {
+			void SetHandle(const handle_t& handle) {
 				_handle = handle;
 			}
 			
@@ -120,7 +123,15 @@ namespace EAClock {
 				return FALSE;
 			}
 			
-			virtual void TransitTo(const fsize_t& handle) {
+			virtual void SetReturnTarget(const handle_t& target) {
+				_returnTarget = target;
+			}
+			
+			virtual handle_t GetReturnTarget() const {
+				return _returnTarget;
+			}
+			
+			virtual void TransitTo(const handle_t& handle) {
 				_transitionTarget = handle;
 			}
 			
@@ -128,7 +139,7 @@ namespace EAClock {
 				return _transitionTarget != 0;
 			}
 			
-			virtual fsize_t GetTransitionTarget() const {
+			virtual handle_t GetTransitionTarget() const {
 				return _transitionTarget;
 			}
 		};

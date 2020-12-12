@@ -1,19 +1,30 @@
-#ifndef __UIENTITYTIME_H__
-#define __UIENTITYTIME_H__
+#ifndef __UIENTITYTIME_HPP__
+#define __UIENTITYTIME_HPP__
 #include "../BaseAVR/Time/TimeSpan.h"
 #include "UIEntity.hpp"
 
+
 using namespace BaseAVR::Time;
+
 
 namespace EAClock {
 	namespace UI {
 		
+		//Represents time show mode
 		enum class ShowMode : u8_t {
+			
+			//Represents hours and minutes show mode
 			hh_mm,
+			
+			//Represents minutes and seconds show mode
 			mm_ss,
+			
+			//Represents seconds and tenth hundredth parts of second show mode
 			ss_th
 		};
 		
+		
+		//Represents base class for Time based UI entity
 		class UIEntityTime : public UIEntity {
 			
 			private:
@@ -22,7 +33,6 @@ namespace EAClock {
 			TimeSpan _timeValue;
 			
 			protected:
-			
 			
 			
 			UIEntityTime(const l_t& state, pbutton_t up, pbutton_t down) : UIEntity(state, up, down)
@@ -103,4 +113,4 @@ namespace EAClock {
 }
 
 
-#endif //__UIENTITYTIME_H__
+#endif //__UIENTITYTIME_HPP__

@@ -13,33 +13,22 @@ using namespace BaseAVR::Audio::HAL;
 namespace EAClock {
 	namespace UI {
 		
+		//Represents timer UI and logic
 		class Timer : public UIEntityTime {
 			
 			private:
 			
 			static Timer instance;
-			TimeSpan _userTimeLeft;
+			
 			l_t _isSelectionPerformed;
+			TimeSpan _userTimeLeft;
+			
 			
 			_ButtonEventCallBack _upClickHandlerBackup;
 			_ButtonEventCallBack _downClickHandlerBackup;
 			_ButtonEventCallBack _upLongClickHandlerBackup;
 			_ButtonEventCallBack _downLongClickHandlerBackup;
 			
-			
-			Timer(
-			const l_t& state,
-			const TimeSpan& pivotValue,
-			pbutton_t up,
-			pbutton_t down) : UIEntityTime(state, up, down) {
-				_userTimeLeft = pivotValue;
-				_isSelectionPerformed = FALSE;
-				this->BackupLastButtons();
-			}
-			
-			void Reset() {
-				UIEntityTime::SetTimeValue(_userTimeLeft);
-			}
 			
 			void BackupLastButtons() {
 				_upClickHandlerBackup = UIEntityTime::_up->GetClickHandler();
@@ -56,6 +45,22 @@ namespace EAClock {
 				UIEntityTime::_up->SetLongClickHandler(_upLongClickHandlerBackup);
 				UIEntityTime::_down->SetLongClickHandler(_downLongClickHandlerBackup);
 			}
+			
+			
+			Timer(
+			const l_t& state,
+			const TimeSpan& pivotValue,
+			pbutton_t up,
+			pbutton_t down) : UIEntityTime(state, up, down) {
+				_userTimeLeft = pivotValue;
+				_isSelectionPerformed = FALSE;
+				this->BackupLastButtons();
+			}
+			
+			void Reset() {
+				UIEntityTime::SetTimeValue(_userTimeLeft);
+			}
+			
 			
 			static void OnUpClick(const Button& sender) {
 				instance.TransitTo(instance.GetReturnTarget());

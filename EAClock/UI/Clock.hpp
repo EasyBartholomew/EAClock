@@ -13,12 +13,20 @@ using namespace BaseAVR::Audio::HAL;
 namespace EAClock {
 	namespace UI {
 
+		//Represents a clock selection target
 		enum class SelectionTarget : u8_t {
+			
+			//Represents no target
 			None,
+			
+			//Represents clock time
 			Time,
+			
+			//Represents alarm time
 			AlarmTime
 		};
-
+		
+		//Represents Clock UI and logic
 		class Clock : public UIEntityTime {
 			
 			private:
@@ -30,6 +38,28 @@ namespace EAClock {
 			SelectionTarget _selectionTarget;
 			
 			pbutton_t _select;
+			
+			_ButtonEventCallBack _upClickHandlerBackup;
+			_ButtonEventCallBack _downClickHandlerBackup;
+			_ButtonEventCallBack _upLongClickHandlerBackup;
+			_ButtonEventCallBack _downLongClickHandlerBackup;
+			
+			
+			void BackupLastButtons() {
+				_upClickHandlerBackup = UIEntityTime::_up->GetClickHandler();
+				_downClickHandlerBackup = UIEntityTime::_down->GetClickHandler();
+				
+				_upLongClickHandlerBackup = UIEntityTime::_up->GetLongClickHandler();
+				_downLongClickHandlerBackup = UIEntityTime::_down->GetLongClickHandler();
+			}
+			
+			void RestoreLastButtons() {
+				UIEntityTime::_up->SetClickHandler(_upClickHandlerBackup);
+				UIEntityTime::_down->SetClickHandler(_downClickHandlerBackup);
+				
+				UIEntityTime::_up->SetLongClickHandler(_upLongClickHandlerBackup);
+				UIEntityTime::_down->SetLongClickHandler(_downLongClickHandlerBackup);
+			}
 			
 			Clock(
 			const TimeSpan& initTime,
@@ -146,10 +176,13 @@ namespace EAClock {
 			}
 			
 			static void OnAlarmStopRinging(const Button& sender) {
-				avrhwaudio::Stop();
 				
-				//Add restoring handlers here
-				instance.RestoreHandlers();
+				if(avrhwaudio::IsStarted()) {
+					avrhwaudio::Stop();
+					
+					//Add restoring handlers here
+					instance.RestoreLastButtons();
+				}
 			}
 			
 			public:
@@ -159,16 +192,18 @@ namespace EAClock {
 				if(_alarmOn) {
 					if(_alarmTime == this->GetTimeValue()) {
 						
-						//ring code here
-						
-						_up->SetLongClickHandler(nullptr);
-						_down->SetLongClickHandler(nullptr);
-						_select->SetClickHandler(nullptr);
-						_up->SetClickHandler(Clock::OnAlarmStopRinging);
-						_down->SetClickHandler(Clock::OnAlarmStopRinging);
-						
-						
-						avrhwaudio::Start(ALARM_FREQ);
+						if(!avrhwaudio::IsStarted()) {
+							//ring code here
+							BackupLastButtons();
+							
+							_up->SetLongClickHandler(nullptr);
+							_down->SetLongClickHandler(nullptr);
+							_select->SetClickHandler(nullptr);
+							_up->SetClickHandler(Clock::OnAlarmStopRinging);
+							_down->SetClickHandler(Clock::OnAlarmStopRinging);
+							
+							avrhwaudio::Start(ALARM_FREQ);
+						}
 					}
 				}
 				

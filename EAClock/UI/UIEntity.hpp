@@ -1,5 +1,5 @@
-#ifndef __UIENTITY_H__
-#define __UIENTITY_H__
+#ifndef __UIENTITY_HPP__
+#define __UIENTITY_HPP__
 #include "../BaseAVR/globaldef.h"
 #include "../BaseAVR/IO/Button.h"
 
@@ -13,7 +13,14 @@ namespace EAClock {
 		typedef Button* pbutton_t;
 		typedef fsize_t handle_t;
 		
+		
+		//Represents base class for any UI entity
 		class UIEntity	{
+			
+			public:
+			
+			//Max length for data buffer
+			static const fsize_t BufferMax = 0x4;
 			
 			private:
 			
@@ -21,14 +28,10 @@ namespace EAClock {
 			handle_t _transitionTarget;
 			handle_t _returnTarget;
 			
-			public:
-			
-			static const fsize_t BufferMax = 0x4;
-			
-			protected:
-			
 			l_t _state;
 			l_t _focus;
+			
+			protected:
 			
 			mutable u8_t _buffer[UIEntity::BufferMax];
 			
@@ -148,4 +151,4 @@ namespace EAClock {
 	}
 }
 
-#endif //__UIENTITY_H__
+#endif //__UIENTITY_HPP__

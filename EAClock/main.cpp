@@ -7,7 +7,7 @@ using namespace BaseAVR::Time;
 
 int main() {
 	
-	//Init of usable modules
+	//Initialization of usable modules
 	App::Init();
 	
 	//Showing splash screen for 3 seconds

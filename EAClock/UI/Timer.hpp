@@ -154,10 +154,13 @@ namespace EAClock {
 				UIEntityTime::_down->SetClickHandler(OnDownClick);
 				UIEntityTime::_down->SetLongClickHandler(OnDownLongClick);
 				UIEntityTime::_up->SetClickHandler(OnUpClick);
+				
+				lcd8::PointAt(lcd8position::Fourth, FALSE);
 			}
 			
 			void OnFocusLost() override {
 				lcd8::PointAt(lcd8position::Second, FALSE);
+				lcd8::PointAt(lcd8position::Fourth, this->IsStarted());
 			}
 			
 			static Timer* GetInstace() {

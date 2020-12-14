@@ -171,9 +171,6 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="App.hpp">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="BaseAVR\Audio\HAL\avrhwaudio.cpp">
       <SubType>compile</SubType>
     </Compile>

@@ -26,14 +26,14 @@ namespace EAClock {
 			
 			TemperatureUnits _currentUnits;
 			
-			typename Time::Timer* _dataUpdater;
+			typename BaseAVR::Time::Timer* _dataUpdater;
 			
 			
 			TemperatureSensor(const l_t& state, pbutton_t down, const TemperatureUnits& units) : UIEntity(state, nullptr, down) {
 				_currentUnits = units;
 				_currentValue = 0;
 				
-				_dataUpdater = Time::Timer::GetNextInstance(DEFAULT_DATAUPDATE_INTERVAL);
+				_dataUpdater = BaseAVR::Time::Timer::GetNextInstance(DEFAULT_DATAUPDATE_INTERVAL);
 				_dataUpdater->SetAutoReset(TRUE);
 				_dataUpdater->SubscribeHandler(TemperatureSensor::OnDataUpdate);
 				_dataUpdater->SetHandlerPriority(CallPriority::Normal);

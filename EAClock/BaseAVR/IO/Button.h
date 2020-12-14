@@ -62,7 +62,7 @@ namespace BaseAVR {
 			
 			//Static
 			public:
-			static const fsize_t InstancesMax = 0x10;
+			static const fsize_t InstancesMax = 0x3;
 			static void Init();
 			
 			static Button* GetInstance(const fsize_t&);

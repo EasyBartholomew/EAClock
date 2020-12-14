@@ -4,7 +4,7 @@
 #include "TimeSpan.h"
 
 #define DEFAULT_TIMER_INTERVAL TimeSpan(1)
-#define TIMER_INST_MAX 16
+#define TIMER_INST_MAX 6
 
 namespace BaseAVR {
 	namespace Time {

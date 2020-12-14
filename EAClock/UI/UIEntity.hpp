@@ -126,11 +126,11 @@ namespace EAClock {
 				return FALSE;
 			}
 			
-			virtual void SetReturnTarget(const handle_t& target) {
+			void SetReturnTarget(const handle_t& target) {
 				_returnTarget = target;
 			}
 			
-			virtual handle_t GetReturnTarget() const {
+			handle_t GetReturnTarget() const {
 				return _returnTarget;
 			}
 			

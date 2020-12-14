@@ -34,7 +34,6 @@ namespace EAClock {
 			
 			protected:
 			
-			
 			UIEntityTime(const l_t& state, pbutton_t up, pbutton_t down) : UIEntity(state, up, down)
 			{ }
 			

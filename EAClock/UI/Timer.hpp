@@ -1,6 +1,7 @@
 #ifndef __TIMER_HPP__
 #define __TIMER_HPP__
 #include "UIEntityTime.hpp"
+#include "ButtonHelper.hpp"
 #include "TimeSelector.hpp"
 
 #include "../BaseAVR/Audio/HAL/avrhwaudio.h"
@@ -24,26 +25,20 @@ namespace EAClock {
 			TimeSpan _userTimeLeft;
 			
 			
-			_ButtonEventCallBack _upClickHandlerBackup;
-			_ButtonEventCallBack _downClickHandlerBackup;
-			_ButtonEventCallBack _upLongClickHandlerBackup;
-			_ButtonEventCallBack _downLongClickHandlerBackup;
-			
-			
 			void BackupLastButtons() {
-				_upClickHandlerBackup = UIEntityTime::_up->GetClickHandler();
-				_downClickHandlerBackup = UIEntityTime::_down->GetClickHandler();
+				ButtonHelper::_upClickHandlerBackup = UIEntityTime::_up->GetClickHandler();
+				ButtonHelper::_downClickHandlerBackup = UIEntityTime::_down->GetClickHandler();
 				
-				_upLongClickHandlerBackup = UIEntityTime::_up->GetLongClickHandler();
-				_downLongClickHandlerBackup = UIEntityTime::_down->GetLongClickHandler();
+				ButtonHelper::_upLongClickHandlerBackup = UIEntityTime::_up->GetLongClickHandler();
+				ButtonHelper::_downLongClickHandlerBackup = UIEntityTime::_down->GetLongClickHandler();
 			}
 			
 			void RestoreLastButtons() {
-				UIEntityTime::_up->SetClickHandler(_upClickHandlerBackup);
-				UIEntityTime::_down->SetClickHandler(_downClickHandlerBackup);
+				UIEntityTime::_up->SetClickHandler(ButtonHelper::_upClickHandlerBackup);
+				UIEntityTime::_down->SetClickHandler(ButtonHelper::_downClickHandlerBackup);
 				
-				UIEntityTime::_up->SetLongClickHandler(_upLongClickHandlerBackup);
-				UIEntityTime::_down->SetLongClickHandler(_downLongClickHandlerBackup);
+				UIEntityTime::_up->SetLongClickHandler(ButtonHelper::_upLongClickHandlerBackup);
+				UIEntityTime::_down->SetLongClickHandler(ButtonHelper::_downLongClickHandlerBackup);
 			}
 			
 			
@@ -59,11 +54,6 @@ namespace EAClock {
 			
 			void Reset() {
 				UIEntityTime::SetTimeValue(_userTimeLeft);
-			}
-			
-			
-			static void OnUpClick(const Button& sender) {
-				instance.TransitTo(instance.GetReturnTarget());
 			}
 			
 			static void OnDownClick(const Button& sender) {
@@ -84,7 +74,7 @@ namespace EAClock {
 				instance.TransitTo(TimeSelector::GetInstance()->GetHandle());
 			}
 			
-			static void OnUpLongClick(const Button& sender) {
+			static void OnUpClick(const Button& sender) {
 				instance.Reset();
 			}
 			
@@ -164,14 +154,11 @@ namespace EAClock {
 				UIEntityTime::_down->SetClickHandler(OnDownClick);
 				UIEntityTime::_down->SetLongClickHandler(OnDownLongClick);
 				UIEntityTime::_up->SetClickHandler(OnUpClick);
-				UIEntityTime::_up->SetLongClickHandler(OnUpLongClick);
 			}
 			
 			void OnFocusLost() override {
-				
 				lcd8::PointAt(lcd8position::Second, FALSE);
 			}
-			
 			
 			static Timer* GetInstace() {
 				return &instance;
@@ -188,7 +175,6 @@ namespace EAClock {
 		};
 		
 		Timer Timer::instance(FALSE, TimeSpan::Zero, nullptr, nullptr);
-		
 	}
 }
 #endif //__TIMER_HPP__

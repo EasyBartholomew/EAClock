@@ -26,7 +26,6 @@ namespace EAClock {
 			
 			handle_t _handle;
 			handle_t _transitionTarget;
-			handle_t _returnTarget;
 			
 			l_t _state;
 			l_t _focus;
@@ -43,7 +42,6 @@ namespace EAClock {
 				_up = up;
 				_down = down;
 				_handle = INVALID_HANDLE;
-				_returnTarget = 0;
 				_focus = FALSE;
 			}
 			
@@ -87,20 +85,12 @@ namespace EAClock {
 				OnFocusLost();
 			}
 			
-			virtual void OnStart()
-			{ }
-			
-			virtual void OnStop()
-			{ }
-			
 			void Start() {
 				_state = TRUE;
-				OnStart();
 			}
 			
 			void Stop() {
 				_state = FALSE;
-				OnStop();
 			}
 			
 			virtual void OnUiUpdate()
@@ -122,23 +112,11 @@ namespace EAClock {
 				return FALSE;
 			}
 			
-			virtual l_t IsMainUIEntity() const {
-				return FALSE;
-			}
-			
-			void SetReturnTarget(const handle_t& target) {
-				_returnTarget = target;
-			}
-			
-			handle_t GetReturnTarget() const {
-				return _returnTarget;
-			}
-			
-			virtual void TransitTo(const handle_t& handle) {
+			void TransitTo(const handle_t& handle) {
 				_transitionTarget = handle;
 			}
 			
-			virtual l_t IsTransitionTarget() const {
+			l_t IsTransitionTarget() const {
 				return _transitionTarget != 0;
 			}
 			

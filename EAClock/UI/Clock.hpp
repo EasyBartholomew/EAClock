@@ -2,13 +2,17 @@
 #define __CLOCK_HPP__
 #include "UIEntityTime.hpp"
 
+#include "ButtonHelper.hpp"
 #include "Stopwatch.hpp"
 #include "TimeSelector.hpp"
 #include "TemperatureSensor.hpp"
 
+
 using namespace BaseAVR::Audio::HAL;
 
-#define ALARM_FREQ 1000
+
+#define ALARM_FREQ (freq_t)1000
+
 
 namespace EAClock {
 	namespace UI {
@@ -39,26 +43,20 @@ namespace EAClock {
 			
 			pbutton_t _select;
 			
-			_ButtonEventCallBack _upClickHandlerBackup;
-			_ButtonEventCallBack _downClickHandlerBackup;
-			_ButtonEventCallBack _upLongClickHandlerBackup;
-			_ButtonEventCallBack _downLongClickHandlerBackup;
-			
-			
 			void BackupLastButtons() {
-				_upClickHandlerBackup = UIEntityTime::_up->GetClickHandler();
-				_downClickHandlerBackup = UIEntityTime::_down->GetClickHandler();
+				ButtonHelper::_upClickHandlerBackup = UIEntityTime::_up->GetClickHandler();
+				ButtonHelper::_downClickHandlerBackup = UIEntityTime::_down->GetClickHandler();
 				
-				_upLongClickHandlerBackup = UIEntityTime::_up->GetLongClickHandler();
-				_downLongClickHandlerBackup = UIEntityTime::_down->GetLongClickHandler();
+				ButtonHelper::_upLongClickHandlerBackup = UIEntityTime::_up->GetLongClickHandler();
+				ButtonHelper::_downLongClickHandlerBackup = UIEntityTime::_down->GetLongClickHandler();
 			}
 			
 			void RestoreLastButtons() {
-				UIEntityTime::_up->SetClickHandler(_upClickHandlerBackup);
-				UIEntityTime::_down->SetClickHandler(_downClickHandlerBackup);
+				UIEntityTime::_up->SetClickHandler(ButtonHelper::_upClickHandlerBackup);
+				UIEntityTime::_down->SetClickHandler(ButtonHelper::_downClickHandlerBackup);
 				
-				UIEntityTime::_up->SetLongClickHandler(_upLongClickHandlerBackup);
-				UIEntityTime::_down->SetLongClickHandler(_downLongClickHandlerBackup);
+				UIEntityTime::_up->SetLongClickHandler(ButtonHelper::_upLongClickHandlerBackup);
+				UIEntityTime::_down->SetLongClickHandler(ButtonHelper::_downLongClickHandlerBackup);
 			}
 			
 			Clock(
@@ -198,7 +196,6 @@ namespace EAClock {
 							
 							_up->SetLongClickHandler(nullptr);
 							_down->SetLongClickHandler(nullptr);
-							_select->SetClickHandler(nullptr);
 							_up->SetClickHandler(Clock::OnAlarmStopRinging);
 							_down->SetClickHandler(Clock::OnAlarmStopRinging);
 							
@@ -249,10 +246,6 @@ namespace EAClock {
 			
 			static Clock* GetInstance() {
 				return &instance;
-			}
-			
-			l_t IsMainUIEntity() const override {
-				return TRUE;
 			}
 		};
 		

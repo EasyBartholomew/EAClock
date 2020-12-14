@@ -10,8 +10,8 @@ int main() {
 	//Initialization of usable modules
 	App::Init();
 	
-	//Showing splash screen for 3 seconds
-	App::ShowSplashScreenFor(TimeSpan::FromSeconds(1));
+	//Showing splash screen for 2 seconds
+	App::ShowSplashScreenFor(TimeSpan::FromSeconds(2));
 	
 	//Starting main program
 	App::Start();

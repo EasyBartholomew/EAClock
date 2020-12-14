@@ -125,7 +125,6 @@ namespace EAClock {
 				
 				return TemperatureSensor::GetInstance();
 			}
-			
 		};
 		
 		TemperatureSensor TemperatureSensor::instance(FALSE, nullptr, TemperatureUnits::Celsius);

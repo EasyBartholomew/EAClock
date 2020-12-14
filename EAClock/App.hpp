@@ -76,7 +76,7 @@ namespace EAClock {
 			pui_entity ui_selector = TimeSelector::InitAndGetInstance(up, down);
 			pui_entity ui_stopWatch = Stopwatch::InitAndGetInstance(TimeSpan::Zero, up, down);
 			pui_entity ui_sensor = TemperatureSensor::InitAndGetInstance(FALSE, down, TemperatureUnits::Celsius);
-			pui_entity ui_timer = UI::Timer::InitAndGetInstace(FALSE, TimeSpan(0, 0, 30, 0, 0), up, down);
+			pui_entity ui_timer = UI::Timer::InitAndGetInstace(FALSE, TimeSpan(0, 0, 5, 0, 0), up, down);
 			
 			//Adding other UIs here
 			UIManager::AddUI(ui_selector);

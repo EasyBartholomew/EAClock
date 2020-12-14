@@ -29,7 +29,7 @@ namespace EAClock {
 			TimeSpan _blinkInterval;
 			TimeSpan _timeToUpdate;
 			
-			fsize_t _backHandle;
+			handle_t _backHandle;
 			
 			u8_t * _GetBuffer() const {
 				
@@ -69,10 +69,18 @@ namespace EAClock {
 							
 							case SelectionPair::Low: {
 								timeValue.AddMinutes(sign * val);
+								
+								if(timeValue.GetTotalMilliseconds() < 0)
+								timeValue.AddHours(1);
+								
 							}break;
 							
 							case SelectionPair::High: {
 								timeValue.AddHours(sign * val);
+								
+								if(timeValue.GetTotalMilliseconds() < 0)
+								timeValue.AddDays(1);
+								
 							}break;
 							
 							default:
@@ -85,10 +93,18 @@ namespace EAClock {
 							
 							case SelectionPair::Low: {
 								timeValue.AddSeconds(sign * val);
+								
+								if(timeValue.GetTotalMilliseconds() < 0)
+								timeValue.AddMinutes(1);
+								
 							}break;
 							
 							case SelectionPair::High: {
 								timeValue.AddMinutes(sign * val);
+								
+								if(timeValue.GetTotalMilliseconds() < 0)
+								timeValue.AddHours(1);
+								
 							}break;
 							
 							default:
@@ -102,9 +118,6 @@ namespace EAClock {
 				}
 				
 				auto days = timeValue.GetDays();
-				
-				if(timeValue.GetTotalMilliseconds() < 0)
-				timeValue.AddDays(1);
 				
 				if(days > 0)
 				timeValue.SubtractDays(days);
@@ -163,7 +176,7 @@ namespace EAClock {
 			const TimeSpan& base,
 			const SelectionPair& pair,
 			const ShowMode& showMode,
-			const fsize_t& self) {
+			const handle_t& self) {
 				_backHandle = self;
 				_pair = pair;
 				UIEntityTime::SetTimeValue(base);
@@ -217,7 +230,7 @@ namespace EAClock {
 				}
 			}
 			
-			fsize_t GetTransitionTarget() const override {
+			handle_t GetTransitionTarget() const override {
 				return _backHandle;
 			}
 			

@@ -33,12 +33,8 @@ namespace EAClock {
 				}
 			}
 			
-			static void OnDownLongClick(const Button& sender) {
-				
-				auto timer = Timer::GetInstace();
-				
-				timer->SetReturnTarget(instance.GetHandle());
-				instance.TransitTo(timer->GetHandle());
+			static void OnDownLongClick(const Button& sender) {				
+				instance.TransitTo(Timer::GetInstace()->GetHandle());
 			}
 			
 			Stopwatch(const TimeSpan& startVal, pbutton_t up, pbutton_t down) : UIEntityTime(FALSE, up, down) {

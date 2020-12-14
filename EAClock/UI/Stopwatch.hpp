@@ -33,7 +33,7 @@ namespace EAClock {
 				}
 			}
 			
-			static void OnDownLongClick(const Button& sender) {				
+			static void OnDownLongClick(const Button& sender) {
 				instance.TransitTo(Timer::GetInstace()->GetHandle());
 			}
 			
@@ -58,12 +58,10 @@ namespace EAClock {
 					this->OnFirstStart();
 					firstStart = FALSE;
 				}
-				
-				lcd8::PointAt(lcd8position::Fourth, FALSE);
 			}
 			
 			void OnFocusLost() override {
-				lcd8::PointAt(lcd8position::Fourth, this->IsStarted());
+				this->Stop();
 			}
 			
 			static Stopwatch* InitAndGetInstance(const TimeSpan& startVal, pbutton_t up, pbutton_t down) {

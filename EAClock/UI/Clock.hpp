@@ -206,7 +206,7 @@ namespace EAClock {
 				
 				UIEntityTime::OnUpdate(delta);
 				
-				auto timeVal =  this->GetTimeValue();
+				auto timeVal = this->GetTimeValue();
 				auto days = timeVal.GetDays();
 				
 				if(days > 0) {

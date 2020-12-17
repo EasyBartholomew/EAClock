@@ -30,9 +30,9 @@ namespace EAClock {
 			l_t _state;
 			l_t _focus;
 			
-			protected:
+			static u8_t dataBuffer[UIEntity::BufferMax];
 			
-			mutable u8_t _buffer[UIEntity::BufferMax];
+			protected:
 			
 			pbutton_t _up;
 			pbutton_t _down;
@@ -52,7 +52,7 @@ namespace EAClock {
 			{ }
 			
 			virtual u8_t * _GetBuffer() const {
-				return _buffer;
+				return dataBuffer;
 			}
 			
 			public:
@@ -65,7 +65,7 @@ namespace EAClock {
 				_handle = handle;
 			}
 			
-			virtual l_t IsFocused() {
+			l_t IsFocused() {
 				return _focus;
 			}
 			
@@ -96,15 +96,15 @@ namespace EAClock {
 			virtual void OnUiUpdate()
 			{ }
 			
-			virtual u8_t* GetBufferPtr() {
+			u8_t* GetBufferPtr() {
 				return _GetBuffer();
 			}
 			
-			virtual u8_t const* GetConstBufferPtr() const {
+			u8_t const* GetConstBufferPtr() const {
 				return _GetBuffer();
 			}
 			
-			virtual l_t IsStarted() const {
+			l_t IsStarted() const {
 				return _state;
 			}
 			
@@ -124,6 +124,8 @@ namespace EAClock {
 				return _transitionTarget;
 			}
 		};
+		
+		u8_t UIEntity::dataBuffer[UIEntity::BufferMax];
 		
 		typedef UIEntity* pui_entity;
 	}

@@ -28,7 +28,7 @@ namespace EAClock {
 			private:
 			
 			//Max count of UIs
-			static const fsize_t UIS_MAX = 6;
+			static const fsize_t UIS_MAX = 5;
 			
 			//Main ui handler preset
 			static const handle_t UI_MAIN_HANDLE = 0;

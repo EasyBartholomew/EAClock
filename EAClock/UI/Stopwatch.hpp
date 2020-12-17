@@ -6,6 +6,7 @@
 namespace EAClock {
 	namespace UI {
 		
+		//Represents stopwatch UI and logic
 		class Stopwatch	: public UIEntityTime {
 			
 			private:

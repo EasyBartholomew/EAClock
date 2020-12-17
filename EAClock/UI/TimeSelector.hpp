@@ -31,7 +31,7 @@ namespace EAClock {
 			
 			handle_t _backHandle;
 			
-			u8_t * _GetBuffer() const {
+			u8_t * _GetBuffer() const override {
 				
 				const auto blinkSymbol = '_';
 				auto base = UIEntityTime::_GetBuffer();
@@ -164,14 +164,6 @@ namespace EAClock {
 				_blinkInterval = blinkInterval;
 			}
 			
-			u8_t const * GetConstBufferPtr() const override {
-				return _GetBuffer();
-			}
-			
-			u8_t * GetBufferPtr() override {
-				return _GetBuffer();
-			}
-			
 			void Select(
 			const TimeSpan& base,
 			const SelectionPair& pair,
@@ -204,8 +196,6 @@ namespace EAClock {
 				_down->SetLongClickHandler(OnChangeButtonLongClick);
 				
 				this->Start();
-				
-				UIEntityTime::OnFocus();
 			}
 			
 			void OnFocusLost() override {
@@ -215,8 +205,6 @@ namespace EAClock {
 				this->Stop();
 				
 				_reset();
-				
-				UIEntityTime::OnFocusLost();
 			}
 			
 			void OnUpdate(const TimeSpan& delta) override {

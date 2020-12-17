@@ -48,6 +48,9 @@ namespace EAClock {
 			}
 			
 			u8_t * _GetBuffer() const override {
+				
+				auto _buffer = UIEntity::_GetBuffer();
+				
 				switch(this->GetShowMode()) {
 					
 					case ShowMode::hh_mm: {

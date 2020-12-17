@@ -145,8 +145,8 @@ namespace EAClock {
 					return;
 				}
 				
-				lcd8::Write(cui->GetConstBufferPtr());
 				cui->OnUiUpdate();
+				lcd8::Write(cui->GetConstBufferPtr());
 			}
 			
 			public:

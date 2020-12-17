@@ -43,10 +43,34 @@ namespace EAClock {
 				firstStart = TRUE;
 			}
 			
+			void BlinkCentralPoint() {
+				
+				static l_t pointStatus = TRUE;
+				
+				if(!(this->GetTimeValue().GetMilliseconds() % 500)) {
+					pointStatus = !pointStatus;
+					lcd8::PointAt(lcd8position::Second, pointStatus);
+				}
+			}
+			
+			void SetPoint() {
+				
+				if(this->IsStarted()) {
+					this->BlinkCentralPoint();
+				}
+				else {
+					lcd8::PointAt(lcd8position::Second, TRUE);
+				}
+			}
+			
 			public:
 			
 			void OnFirstStart() {
 				this->Reset();
+			}
+			
+			void OnUiUpdate() override {
+				this->SetPoint();
 			}
 			
 			void OnFocus() override {
@@ -63,6 +87,7 @@ namespace EAClock {
 			
 			void OnFocusLost() override {
 				this->Stop();
+				lcd8::PointAt(lcd8position::Second, FALSE);
 			}
 			
 			static Stopwatch* InitAndGetInstance(const TimeSpan& startVal, pbutton_t up, pbutton_t down) {

@@ -100,6 +100,7 @@ namespace EAClock {
 			
 			static void OnStopRinging(const Button& sender) {
 				instance.StopRinging();
+				lcd8::PointAt(lcd8position::Fourth, FALSE);
 			}
 			
 			void OnSelectionEnd() {

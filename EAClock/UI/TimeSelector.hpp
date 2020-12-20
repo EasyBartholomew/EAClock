@@ -57,7 +57,15 @@ namespace EAClock {
 				}
 			}
 			
-			void ChangeOnValue(const s8_t& sign, const tu_t& val) {
+			u8_t _ChangeCyclically(const s8_t& pivot, const s8_t& step, const s8_t& maxValue) {
+				
+				s8_t retVal = pivot + step;
+				retVal += (retVal < 0 ? maxValue : (retVal >= maxValue ? -maxValue : 0));
+				
+				return retVal;
+			}
+			
+			void ChangeOnValue(const tu_t& val) {
 				
 				_showState = TRUE;
 				_timeToUpdate = TimeSpan::Zero;
@@ -68,18 +76,24 @@ namespace EAClock {
 						switch (_pair) {
 							
 							case SelectionPair::Low: {
-								timeValue.AddMinutes(sign * val);
 								
-								if(timeValue.GetTotalMilliseconds() < 0)
-								timeValue.AddHours(1);
+								auto pickValue = _ChangeCyclically(timeValue.GetMinutes(), (s8_t)val, 60);
+								timeValue = TimeSpan(0,
+								timeValue.GetHours(),
+								pickValue,
+								timeValue.GetSeconds(),
+								timeValue.GetMilliseconds());
 								
 							}break;
 							
 							case SelectionPair::High: {
-								timeValue.AddHours(sign * val);
 								
-								if(timeValue.GetTotalMilliseconds() < 0)
-								timeValue.AddDays(1);
+								auto pickValue = _ChangeCyclically(timeValue.GetHours(), (s8_t)val, 24);
+								timeValue = TimeSpan(0,
+								pickValue,
+								timeValue.GetMinutes(),
+								timeValue.GetSeconds(),
+								timeValue.GetMilliseconds());
 								
 							}break;
 							
@@ -92,18 +106,23 @@ namespace EAClock {
 						switch (_pair) {
 							
 							case SelectionPair::Low: {
-								timeValue.AddSeconds(sign * val);
-								
-								if(timeValue.GetTotalMilliseconds() < 0)
-								timeValue.AddMinutes(1);
+								auto pickValue = _ChangeCyclically(timeValue.GetSeconds(), (s8_t)val, 60);
+								timeValue = TimeSpan(0,
+								timeValue.GetHours(),
+								timeValue.GetMinutes(),
+								pickValue,
+								timeValue.GetMilliseconds());
 								
 							}break;
 							
 							case SelectionPair::High: {
-								timeValue.AddMinutes(sign * val);
 								
-								if(timeValue.GetTotalMilliseconds() < 0)
-								timeValue.AddHours(1);
+								auto pickValue = _ChangeCyclically(timeValue.GetMinutes(), (s8_t)val, 60);
+								timeValue = TimeSpan(0,
+								timeValue.GetHours(),
+								pickValue,
+								timeValue.GetSeconds(),
+								timeValue.GetMilliseconds());
 								
 							}break;
 							
@@ -127,7 +146,7 @@ namespace EAClock {
 			
 			void ChangeByButtonClick(const Button& sender, const tu_t& val) {
 				s8_t sign = (&sender == _up) ? 1 : -1;
-				this->ChangeOnValue(sign, val);
+				this->ChangeOnValue(sign * val);
 			}
 			
 			static void OnChangeButtonClick(const Button& sender) {

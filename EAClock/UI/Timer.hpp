@@ -106,6 +106,11 @@ namespace EAClock {
 			void OnSelectionEnd() {
 				
 				_userTimeLeft = TimeSelector::GetInstance()->GetTimeValue();
+				
+				if(_userTimeLeft == TimeSpan::Zero) {
+					_userTimeLeft.AddMinutes(1);
+				}
+				
 				UIEntityTime::SetTimeValue(_userTimeLeft);
 				_isSelectionPerformed = FALSE;
 			}
@@ -130,13 +135,13 @@ namespace EAClock {
 				
 				auto span = this->GetTimeValue();
 				
-				this->SetShowMode(ShowMode::hh_mm);
-				
-				if(span.GetHours() == 0) {
+				if(span.GetHours() != 0) {
+					this->SetShowMode(ShowMode::hh_mm);
+				}
+				else if(span.GetHours() == 0) {
 					this->SetShowMode(ShowMode::mm_ss);
 				}
-				
-				if(span.GetMinutes() == 0) {
+				else if(span.GetMinutes() == 0) {
 					this->SetShowMode(ShowMode::ss_th);
 				}
 			}
